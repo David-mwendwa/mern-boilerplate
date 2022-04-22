@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { UnauthenticatedError, ForbiddenError } from '../errors/index.js';
-import { isTokenValid } from '../utils/jwt.js';
+import { isTokenValid } from '../utils/index.js';
 
 // checks if user is authenticated or not - through bearer token
 export const authenticateUser_bearer = async (req, res, next) => {

@@ -5,9 +5,8 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../errors/index.js';
-import { sendToken } from '../utils/jwt.js';
-import sendEmail from '../utils/sendEmail.js';
-import createTokenUser from '../utils/createTokenUser.js';
+
+import { createTokenUser, sendToken, sendEmail } from '../utils/index.js';
 
 // Register user => /api/v1/auth/register
 const register = async (req, res, next) => {
@@ -122,17 +121,27 @@ const logout = async (req, res, next) => {
   res.status(StatusCodes.OK).json({ success: true, message: 'Logged out' });
 };
 
-// Update user => /api/v1/updateUser
+// Update user using findOneAndUpdate => /api/v1/updateUser
 const updateUser = async (req, res) => {
-  const { email, name } = req.body;
-  const user = await User.findOne({ _id: req.user.userId });
-  if (!user) {
-    throw new NotFoundError('User not found');
-  }
-  user.email = email;
-  user.name = name;
-  await user.save();
+  const user = await User.findOneAndUpdate(
+    { _id: req.user.userId },
+    { ...req.body },
+    { new: true, runValidators: true }
+  );
   sendToken(user, StatusCodes.OK, res);
 };
+
+// Update user using .save() => /api/v1/updateUser
+// const updateUser = async (req, res) => {
+//   const { email, name } = req.body;
+//   const user = await User.findOne({ _id: req.user.userId });
+//   if (!user) {
+//     throw new NotFoundError('User not found');
+//   }
+//   user.email = email;
+//   user.name = name;
+//   await user.save();
+//   sendToken(user, StatusCodes.OK, res);
+// };
 
 export { register, login, forgotPassword, resetPassword, logout, updateUser };
