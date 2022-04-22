@@ -5,7 +5,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../errors/index.js';
-import sendToken from '../utils/jwt.js';
+import { sendToken } from '../utils/jwt.js';
 import sendEmail from '../utils/sendEmail.js';
 
 // Register user => /api/v1/auth/register
@@ -59,22 +59,22 @@ const login = async (req, res) => {
 const forgotPassword = async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return next(new ErrorHandler('User not found', StatusCodes.NOT_FOUND));
+    throw new NotFoundError('User not found');
   }
 
   // get reset token
-  const resetToken = user.getResetPasswordToken();
+  const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
   // create reset password url
   const resetUrl = `${req.protocol}://${req.get(
     'host'
-  )}/api/v1/password/reset/${resetToken}`;
+  )}/api/v1/user/password/reset/${resetToken}`;
   const message = `Your password reset token is as follows:\n\n${resetUrl}\n\nIf you have not requested this email, please ignore it.`;
   try {
     await sendEmail({
       email: user.email,
-      subject: 'ShopIT Password Recovery',
+      subject: '<app-name> Password Recovery', // prefix application name
       message,
     });
     res.status(StatusCodes.OK).json({
@@ -85,7 +85,7 @@ const forgotPassword = async (req, res, next) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
-    return next(new ErrorHandler(error.message));
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
   }
 };
 
@@ -101,19 +101,12 @@ const resetPassword = async (req, res, next) => {
     resetPasswordToken,
     resetPasswordExpire: { $gt: Date.now() },
   });
-  if (!user) {
-    return next(
-      new ErrorHandler(
-        'Password reset token is invalid or has expired',
-        StatusCodes.BAD_REQUEST
-      )
-    );
-  }
 
+  if (!user) {
+    throw new NotFoundError('Password reset token is invalid or has expired');
+  }
   if (req.body.password !== req.body.confirmPassword) {
-    return next(
-      new ErrorHandler('Password does not match', StatusCodes.BAD_REQUEST)
-    );
+    throw new BadRequestError('Password does not match');
   }
 
   // setup new password
@@ -134,10 +127,10 @@ const logout = async (req, res, next) => {
 // Update user => /api/v1/updateUser
 const updateUser = async (req, res) => {
   const { email, name } = req.body;
-  if (!email || !name) {
-    throw new BadRequestError('Please provide all values');
-  }
   const user = await User.findOne({ _id: req.user.userId });
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
   user.email = email;
   user.name = name;
   await user.save();

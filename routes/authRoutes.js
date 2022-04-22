@@ -17,11 +17,11 @@ import {
   logout,
   updateUser,
 } from '../controllers/authController.js';
-import { auth, isAuthenticatedUser } from '../middleware/auth.js';
+import { authenticateUser } from '../middleware/auth.js';
 
 router.route('/auth/register').post(apiLimiter, register);
 router.route('/auth/login').post(apiLimiter, login);
-router.route('/updateUser').patch(auth, updateUser);
+router.route('/updateUser').patch(authenticateUser, updateUser);
 router.route('/user/password/forgot').post(forgotPassword);
 router.route('/user/password/reset/:token').patch(resetPassword);
 router.route('/auth/logout').get(logout);

@@ -34,10 +34,11 @@ app.use(express.static(path.resolve(__dirname, './client/build')));
 
 // use extra security packages
 app.use(express.json());
-app.use(cookieParser());
 app.use(helmet());
 app.use(xss());
 app.use(mongoSanitize());
+
+app.use(cookieParser(process.env.JWT_SECRET)); // param is optional
 
 // use routes
 app.use('/api/v1', authRouter);

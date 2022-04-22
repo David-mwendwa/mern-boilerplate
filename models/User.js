@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    enum: ['admin', 'user'],
     default: 'user',
   },
   createdAt: {
@@ -50,30 +51,36 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-// compare user password
+// compare user password => invoked as user.comparePassword(enteredPassword)
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// return JWT token
+// return JWT token => invoked as user.createJWT()
 userSchema.methods.createJWT = function () {
-  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_LIFETIME,
-  });
+  return jwt.sign(
+    { userId: this._id, role: this.role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_LIFETIME,
+    }
+  );
 };
 
-// generate password reset token
-userSchema.methods.getResetPasswordToken = function () {
+// generate password reset token => invoked as user.createPasswordResetToken()
+userSchema.methods.createPasswordResetToken = function () {
   // generate token
   const resetToken = crypto.randomBytes(10).toString('hex');
+
   // hash and set to resetPasswordToken
   this.resetPasswordToken = crypto
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
+
   // set token expire time
   this.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
   return resetToken;

@@ -7,7 +7,7 @@ const errorHandlerMiddleware = async (err, req, res, next) => {
   };
   // handle wrong mongoose object ID error
   if (err.name === 'CastError') {
-    defaultError.statusCode = StatusCodes.BAD_REQUEST;
+    defaultError.statusCode = StatusCodes.NOT_FOUND;
     defaultError.msg = `Resource not found. Invalid: ${err.path}`;
   }
 
