@@ -34,18 +34,15 @@ export const authenticateUser_cookies = async (req, res, next) => {
 // checks user authentication through bearer token or through cookies combo
 export const authenticateUser = async (req, res, next) => {
   let token;
-  // check signed
-  // if (req.signedCookies && req.signedCookies.token) {
-  //   token = req.signedCookies.token;
-  // }
-
   // check header
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer')) {
     token = authHeader.split(' ')[1];
   }
   // check cookies
-  else if (req.cookies.token) {
+  else if (req.signedCookies && req.signedCookies.token) {
+    token = req.signedCookies.token;
+  } else if (req.cookies.token) {
     token = req.cookies.token;
   }
   if (!token) {

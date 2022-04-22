@@ -7,6 +7,7 @@ import {
 } from '../errors/index.js';
 import { sendToken } from '../utils/jwt.js';
 import sendEmail from '../utils/sendEmail.js';
+import createTokenUser from '../utils/createTokenUser.js';
 
 // Register user => /api/v1/auth/register
 const register = async (req, res, next) => {
@@ -27,12 +28,9 @@ const register = async (req, res, next) => {
       url: '',
     },
   });
+  const tokenUser = createTokenUser(user);
   const token = user.createJWT();
-  res.status(StatusCodes.CREATED).json({
-    success: true,
-    user: { name: user.name, email: user.email },
-    token,
-  });
+  res.status(StatusCodes.CREATED).json({ user: tokenUser, token });
 };
 
 // Login user => /api/v1/auth/login

@@ -5,9 +5,9 @@ export const isTokenValid = ({ token }) =>
   jwt.verify(token, process.env.JWT_SECRET);
 
 // create, send token & save in the cookie.
-// this function receives authenticated user, statusCode & response - called on login
+// sendToken receives authenticated user, statusCode & response - called on login
 export const sendToken = (user, statusCode, res) => {
-  // craete jwt
+  // create token
   const token = user.createJWT();
 
   // options for cookie
@@ -15,13 +15,9 @@ export const sendToken = (user, statusCode, res) => {
   const options = {
     expires: new Date(Date.now() + process.env.COOKIE_LIFETIME * oneDay),
     httpOnly: true,
+    // secure: process.env.NODE_ENV === 'production',
     // signed: true,
   };
 
-  res.status(statusCode).cookie('token', token, options).json({
-    success: true,
-    token,
-    user,
-  });
+  res.status(statusCode).cookie('token', token, options).json({ token, user });
 };
-

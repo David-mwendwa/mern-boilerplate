@@ -20,6 +20,7 @@ import connectDB from './db/connect.js';
 
 // import routes
 import authRouter from './routes/authRoutes.js';
+import testRouter from './routes/testRoute.js';
 
 // import middlewares
 import errorHandlerMiddleware from './middleware/error-handler.js';
@@ -38,15 +39,16 @@ app.use(helmet());
 app.use(xss());
 app.use(mongoSanitize());
 
-app.use(cookieParser(process.env.JWT_SECRET)); // param is optional
+app.use(cookieParser()); // you can parse process.env.JWT_SECRET param - signs cookie
 
 // use routes
 app.use('/api/v1', authRouter);
+app.use('/api/v1/test', testRouter);
 
-// render index page
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
-});
+// render index page - used after running => npm run build-client
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
+// });
 
 // use error middlewares
 app.use(notFoundMiddleware);
