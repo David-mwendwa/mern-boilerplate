@@ -1,6 +1,8 @@
 import 'express-async-errors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import fileUpload from 'express-fileupload';
 import express from 'express';
 const app = express();
 import dotenv from 'dotenv';
@@ -33,11 +35,20 @@ if (process.env.NODE_ENV !== 'production') {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.resolve(__dirname, './client/build')));
 
+// make static images available in the frontend
+//app.use(express.static(path.resolve(__dirname, '/client/public/uploads')));
+// app.use(
+//   '/client/public/uploads',
+//   express.static(__dirname + '/client/public/uploads')
+// );
+
 // use extra security packages
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(xss());
 app.use(mongoSanitize());
+app.use(fileUpload({ useTempFiles: true }));
 
 app.use(cookieParser()); // you can parse process.env.JWT_SECRET param - signs cookie
 
