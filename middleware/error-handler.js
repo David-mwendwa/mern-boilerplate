@@ -14,10 +14,31 @@ const errorHandlerMiddleware = async (err, req, res, next) => {
   // handle missing field error
   if (err.name === 'ValidationError') {
     defaultError.statusCode = StatusCodes.BAD_REQUEST;
-    defaultError.msg = Object.values(err.errors)
+    let message = Object.values(err.errors)
       .map((item) => item.message)
       .join(', ');
+    let fields = [];
+    let regex = /`(\w+)`/g;
+    let match = regex.exec(message);
+    while (match !== null) {
+      fields.push(match[1]);
+      match = regex.exec(message);
+    }
+    defaultError.msg =
+      (fields.length &&
+        `${fields.join(', ')} ${
+          fields.length > 1 ? 'fields are' : 'field is'
+        } required`) ||
+      message;
   }
+  // // alternative
+  // if (err.name === 'ValidationError') {
+  //   defaultError.statusCode = StatusCodes.BAD_REQUEST;
+  //   defaultError.msg = Object.keys(err.errors).map(
+  //     (key) => err.errors[key].message
+  //   );
+  // }
+
   // handle unique value/duplicate key error
   if (err.code && err.code === 11000) {
     defaultError.statusCode = StatusCodes.BAD_REQUEST;

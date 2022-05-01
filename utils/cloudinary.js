@@ -17,7 +17,7 @@ exports.upload = async (req, res) => {
       req.files?.img;
     if (file) {
       return await cloudinary.v2.uploader.upload(file.tempFilePath, {
-        folder: 'avatars', // cloudinary folder where the images are saved
+        folder: 'images', // cloudinary folder where the images are saved
         // width: 300, // width of an image
         // crop: 'scale',
         resource_type: 'auto',
