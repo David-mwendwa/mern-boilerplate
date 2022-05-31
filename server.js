@@ -56,10 +56,14 @@ app.use(cookieParser()); // you can parse process.env.JWT_SECRET param - signs c
 app.use('/api/v1', authRouter);
 app.use('/api/v1/test', testRouter);
 
-// render index page - used after running => npm run build-client
-// app.get('*', (req, res) => {
-//   res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
-// });
+//render index page - used after running => npm run build-client
+if (process.env.NODE_ENV === 'PRODUCTION') {
+  app.use(express.static(path.join(__dirname, './client/build'))); // read from server.js
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './client/build', 'index.html')); // read from server.js
+  });
+}
 
 // use error middlewares
 app.use(notFoundMiddleware);

@@ -7,23 +7,35 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-// import as {upload} and parse req object as a param
-exports.upload = async (req, res) => {
+// import as {upload} and parse req object and options:{folder, width, crop, public_id etc} as params
+exports.upload = async (req, options) => {
   try {
     let file =
-      req.files?.avatar ||
-      req.files?.image ||
-      req.files?.images ||
-      req.files?.img;
+      req.body?.avatar ||
+      req.body?.avatars ||
+      req.body?.photo ||
+      req.body?.photos ||
+      req.body?.image ||
+      req.body?.images ||
+      req.body?.pic ||
+      req.body?.pics ||
+      req.body?.picture ||
+      req.body?.pictures ||
+      req.body?.profilePic ||
+      req.body?.profilePics;
     if (file) {
-      return await cloudinary.v2.uploader.upload(file.tempFilePath, {
-        folder: 'images', // cloudinary folder where the images are saved
-        // width: 300, // width of an image
-        // crop: 'scale',
+      return await cloudinary.v2.uploader.upload(file, {
         resource_type: 'auto',
+        ...options,
       });
     }
   } catch (error) {
     console.log(error);
   }
+};
+
+// parse image as a parameter
+// TODO: confirm if the image param is parsed, is from cloudinary and has public id
+exports.deleteCloudinaryImage = async (image) => {
+  await cloudinary.v2.uploader.destroy(image.public_id);
 };
