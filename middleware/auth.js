@@ -10,7 +10,7 @@ export const authenticateUser_bearer = async (req, res, next) => {
   }
   const token = authHeader.split(' ')[1];
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.decode(token, process.env.JWT_SECRET);
     req.user = { userId: payload.userId, role: payload.role };
     next();
   } catch (error) {
@@ -26,7 +26,7 @@ export const authenticateUser_cookies = async (req, res, next) => {
       'You must login first to access this resource'
     );
   }
-  const { userId, role } = jwt.verify(token, process.env.JWT_SECRET);
+  const { userId, role } = jwt.decode(token, process.env.JWT_SECRET);
   req.user = { userId: userId, role: role };
   next();
 };
@@ -49,7 +49,8 @@ export const authenticateUser = async (req, res, next) => {
     throw new UnauthenticatedError('Authentication Invalid');
   }
   try {
-    const { userId, role } = isTokenValid({ token });
+    const { userId, role } = jwt.decode(token, process.env.JWT_SECRET);
+    // const { userId, role } = isTokenValid({ token }); !!NOT WORKING
     // attach the user and its permissions to the request object
     req.user = { userId, role };
     next();
