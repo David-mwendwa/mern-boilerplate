@@ -28,6 +28,13 @@ import testRouter from './routes/testRoute.js';
 import errorHandlerMiddleware from './middleware/error-handler.js';
 import notFoundMiddleware from './middleware/not-found.js';
 
+// handle unhandled errors that occur in synchronous code i.e undefined value
+process.on('uncaughtException', (err) => {
+  console.log(err.name, err.message);
+  console.log(`UNCAUGHT EXCEPTION! Shutting down...`);
+  server.close(() => process.exit(1));
+});
+
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
@@ -80,3 +87,10 @@ const start = async () => {
   }
 };
 start();
+
+// handle errors occuring outside express i.e incorrect db password, invalid connection string
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log(`UNHANDLED REJECTION! Shutting down...`);
+  server.close(() => process.exit(1));
+});
