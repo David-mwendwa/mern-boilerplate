@@ -30,9 +30,9 @@ import notFoundMiddleware from './middleware/not-found.js';
 
 // handle unhandled errors that occur in synchronous code i.e undefined value
 process.on('uncaughtException', (err) => {
-  console.log(err.name, err.message);
   console.log(`UNCAUGHT EXCEPTION! Shutting down...`);
-  server.close(() => process.exit(1));
+  console.log(err.name, err.message);
+  process.exit(1);
 });
 
 if (process.env.NODE_ENV !== 'production') {
@@ -81,16 +81,18 @@ const port = process.env.PORT || 5000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URL);
-    app.listen(port, () => console.log(`Server listening on port ${port}`));
+    const server = app.listen(port, () =>
+      console.log(`Server listening on port ${port}`)
+    );
+
+    // handle errors occuring outside express i.e incorrect db password, invalid connection string
+    process.on('unhandledRejection', (err) => {
+      console.log(`UNHANDLED REJECTION! Shutting down...`);
+      console.log(err.name, err.message);
+      server.close(() => process.exit(1));
+    });
   } catch (error) {
     console.log(error);
   }
 };
 start();
-
-// handle errors occuring outside express i.e incorrect db password, invalid connection string
-process.on('unhandledRejection', (err) => {
-  console.log(err.name, err.message);
-  console.log(`UNHANDLED REJECTION! Shutting down...`);
-  server.close(() => process.exit(1));
-});
