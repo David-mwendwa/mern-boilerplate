@@ -25,6 +25,18 @@ const userSchema = new mongoose.Schema(
       minlength: [6, 'Your password must be longer than 6 characters'],
       select: false,
     },
+    passwordConfirm: {
+      type: String,
+      required: [true, 'Please confirm your password'],
+      trim: true,
+      validate: {
+        // This only works on .create() or .save()
+        validator: function (val) {
+          return this.password === val;
+        },
+        message: "Passwords don't match",
+      },
+    },
     avatar: {
       public_id: {
         type: String,
