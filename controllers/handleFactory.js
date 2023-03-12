@@ -6,7 +6,7 @@ const createOne = (Model) => async (req, res, next) => {
   const doc = await Model.create(req.body);
 
   res.status(StatusCodes.CREATED).json({
-    status: 'success',
+    success: true,
     data: { data: doc },
   });
 };
@@ -22,7 +22,7 @@ const getOne = (Model, populateOptions) => async (req, res, next) => {
   if (!doc) {
     throw new NotFoundError('No document found with that ID');
   }
-  res.status(StatusCodes.OK).json({ status: 'success', data: { data: doc } });
+  res.status(StatusCodes.OK).json({ success: true, data: { data: doc } });
 };
 
 const getAll = (Model, searchField) => async (req, res, next) => {
@@ -46,7 +46,7 @@ const getAll = (Model, searchField) => async (req, res, next) => {
   const doc = await features.query;
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    success: true,
     results: doc.length,
     data: { data: doc },
   });
@@ -63,7 +63,7 @@ const updateOne = (Model) => async (req, res, next) => {
   }
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    success: true,
     data: { data: doc },
   });
 };
@@ -76,10 +76,10 @@ const deleteOne = (Model) => async (req, res, next) => {
   }
 
   res.status(StatusCodes.NO_CONTENT).json({
-    status: 'success',
+    success: true,
     data: null,
   });
 };
 
-// parse model parameter on invoking
+// parse model parameter upon invokation
 export { getAll, getOne, createOne, updateOne, deleteOne };

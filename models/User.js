@@ -38,14 +38,19 @@ const userSchema = new mongoose.Schema(
       },
     },
     avatar: {
+      // cloudinary - required: true
       public_id: {
         type: String,
-        //required: true,
+        required: false,
       },
       url: {
         type: String,
-        //required: true,
+        required: false,
       },
+      // multer
+      data: Buffer,
+      contentType: String,
+      filename: String,
     },
     role: {
       type: String,
@@ -65,7 +70,7 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
   },
-  // for virtual properties - don't persit in the db (created on the fly when a request is made)
+  // for virtual properties - don't persist in the db (created on the fly when a request is made)
   { toJSON: { virtuals: true } },
   { toOject: { virtuals: true } }
 );

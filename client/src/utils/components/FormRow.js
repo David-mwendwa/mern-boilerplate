@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * @param {*}, type, name, value, handleChange, labelText
- * @returns html element containing label and the input
+ * @returns html element containing form label + input
  */
 const FormRow = ({ type, name, value, handleChange, labelText }) => {
   return (

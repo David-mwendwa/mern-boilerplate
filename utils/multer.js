@@ -4,7 +4,7 @@ import { NotFoundError } from '../errors/index.js';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, 'client/public/uploads');
+    cb(null, 'client/public/uploads'); //TODO: provide the correct path to uploads folder (NO PROCEEDING SLASH)
   },
   filename(req, file, cb) {
     cb(
@@ -21,39 +21,15 @@ const checkFileType = function (file, cb) {
   if (mimeType && extName) {
     return cb(null, true);
   } else {
-    cb(new NotFoundError('Images only!')); // or cb('Error: You can only upload images!!');
+    cb(new NotFoundError('You can only upload images!')); // or cb('Error: You can only upload images!');
   }
 };
 
+// call uploadOptions as middleware in the route where you want to upload the images
+// e.g uploadOptions.single('image') for single image => 'image', param should be the image fieldName
+// e.g uploadOptions.array('images', 10) for multiple images - 10 for max
 export const uploadOptions = multer({
   storage,
   limits: { fileSize: 10000000 },
   fileFilter: (req, file, cb) => checkFileType(file, cb),
 });
-
-// const FILE_TYPE_MAP = {
-//   'image/png': 'png',
-//   'image/jpeg': 'jpeg',
-//   'image/jpg': 'jpg',
-// };
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     const isValid = FILE_TYPE_MAP[file.mimetype];
-//     let uplaodError = new NotFoundError('invalid image');
-//     if (isValid) {
-//       uplaodError = null;
-//     }
-//     cb(uplaodError, 'client/public/uploads'); // path to images - must create the folders first
-//   },
-//   filename: function (req, file, cb) {
-//     const fileName = file.originalname.split(' ').join('-');
-//     const extension = FILE_TYPE_MAP[file.mimetype];
-//     cb(null, `${fileName.replace(/.\w+$/, '')}-${Date.now()}.${extension}`);
-//   },
-// });
-
-// call uploadOptions as middleware in the route where you want to upload the images
-// e.g uploadOptions.single('image') for single image
-// e.g uploadOptions.array('images', 10) for multiple images - 10 for max
-// export const uploadOptions = multer({ storage: storage });

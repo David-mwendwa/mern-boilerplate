@@ -25,7 +25,7 @@ import connectDB from './db/connect.js';
 import userRouter from './routes/userRoutes.js';
 import testRouter from './routes/testRoute.js';
 
-// import middlewares
+// import middleware
 import errorHandlerMiddleware from './middleware/error-handler.js';
 import notFoundMiddleware from './middleware/not-found.js';
 
@@ -48,7 +48,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // make static images available in the frontend - multer
 //app.use(express.static(path.resolve(__dirname, '/client/public/uploads'))); // - when using commonjs
-// _dirname is not available by default when using esmodule-import (only available in commonjs) hence the need to create it
+// _dirname is not available by default when using es-module-import (only available in commonjs) hence the need to create it
 // const __dirname = path.resolve();
 // app.use(
 //   '/client/public/uploads',
@@ -67,7 +67,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// use extra security package middlewares
+// use extra security package middleware
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000, // 60 minutes
@@ -92,19 +92,19 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
   });
 }
 
-// use error middlewares
+// use error middleware
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 // start server
 const port = process.env.PORT || 5000;
 const DB = process.env.MONGO_URL_TEST;
-mongoose.connect(DB).then(() => console.log('DB connection successfull'));
+mongoose.connect(DB).then(() => console.log('DB connection successful'));
 const server = app.listen(port, () =>
   console.log(`Server listening on port ${port}`)
 );
 
-// handle errors occuring outside express i.e incorrect db password, invalid connection string
+// handle errors occurring outside express i.e incorrect db password, invalid connection string
 process.on('unhandledRejection', (err) => {
   console.log(`UNHANDLED REJECTION! Shutting down...`);
   console.log(err.name, err.message);
