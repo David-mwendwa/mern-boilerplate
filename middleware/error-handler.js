@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 
-const handleDevelopmentErrors = (err, res) => {
+const handleDevelopmentErrors = async (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   res.status(err.statusCode).json({
     error: err,
@@ -8,7 +8,7 @@ const handleDevelopmentErrors = (err, res) => {
   });
 };
 
-const handleProductionErrors = (err, res) => {
+const handleProductionErrors = async (err, req, res, next) => {
   const defaultError = {
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
     message: err.message || 'Something went wrong, please try again later',
@@ -47,12 +47,12 @@ const handleProductionErrors = (err, res) => {
   res.status(defaultError.statusCode).json({ message: defaultError.message });
 };
 
-const errorHandlerMiddleware = async (err, req, res, next) => {
-  let environment = process.env.NODE_ENV.trim();
-  if (environment === 'development') {
-    handleDevelopmentErrors(err, res);
-  } else if (environment === 'production') {
-    handleProductionErrors(err, res);
+const errorHandlerMiddleware = (err, req, res, next) => {
+  let environment = process.env.NODE_ENV?.trim();
+  if (environment && environment === 'production') {
+    return handleProductionErrors(err, req, res, next);
+  } else {
+    return handleDevelopmentErrors(err, req, res, next);
   }
 };
 
