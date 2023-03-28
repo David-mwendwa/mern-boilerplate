@@ -1,31 +1,32 @@
-/* eslint-disable no-unused-vars */
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import devToolsEnhancer from 'remote-redux-devtools';
 import {
-  userDetailsReducer,
-  userLoginReducer,
-  userRegisterReducer,
-  userUpdateProfileReducer,
+  authReducer,
+  userReducer,
+  usersReducer,
 } from './reducers/userReducers.js';
 import { cartReducer } from './reducers/cartReducers';
+import { ordersReducer, orderReducer } from './reducers/orderReducer.js';
+import { productReducer, productsReducer } from './reducers/productReducer.js';
 
 const reducer = combineReducers({
-  userLogin: userLoginReducer,
-  userRegister: userRegisterReducer,
-  userDetails: userDetailsReducer,
-  userUpdateProfile: userUpdateProfileReducer,
+  auth: authReducer,
   cart: cartReducer,
+  user: userReducer,
+  users: usersReducer,
+  order: orderReducer,
+  orders: ordersReducer,
+  product: productReducer,
+  products: productsReducer,
 });
 
 const cartItemsFromStorage = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : [];
 
-const userInfoFromStorage = localStorage.getItem('userInfo')
-  ? JSON.parse(localStorage.getItem('userInfo'))
+const currentUserFromStorage = localStorage.getItem('user')
+  ? JSON.parse(localStorage.getItem('user'))
   : {};
 
 const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
@@ -37,7 +38,7 @@ const initialState = {
     cartItems: cartItemsFromStorage,
     shippingAddress: shippingAddressFromStorage,
   },
-  userLogin: { userInfo: userInfoFromStorage },
+  auth: { user: currentUserFromStorage },
 };
 
 const middleware = [thunk];
@@ -47,14 +48,5 @@ const store = createStore(
   initialState,
   composeWithDevTools(applyMiddleware(...middleware))
 );
-
-// create store using configureStore in place of createStore
-// ref: https://stackoverflow.com/questions/69502147/changing-from-redux-to-redux-toolkit
-// const _store = configureStore({
-//   reducer: reducer,
-//   initialState,
-//   middleware: [thunk],
-//   enhancers: [devToolsEnhancer({ realtime: true })],
-// });
 
 export default store;

@@ -2,11 +2,13 @@ import {
   ADD_TO_CART,
   REMOVE_FROM_CART,
   SAVE_SHIPPING_INFO,
-} from '../constants/cartConstants';
+} from '../constants/actionConstants';
 
 /**
- * @function addToCart adds an item to the cart
- * @param {item, quantity} strings - accepts 2 string params: item and its quantity
+ * Add item to cart
+ * @param {*} item new cart item oject
+ * @param {*} quantity cart item quantity
+ * @returns an array of updated cart items after add
  */
 export const addToCart =
   (item, quantity = 1) =>
@@ -37,8 +39,9 @@ export const addToCart =
   };
 
 /**
- * @function removeFromCart removes an item form the cart
- * @param {id} string - accepts the ID of an item that needs to be removed from the cart
+ * Delete from cart
+ * @param {*} id id of the item to delete from the cart
+ * @return an array of updated cart items after delete
  */
 export const removeFromCart = (id) => async (dispatch, getState) => {
   dispatch({ type: REMOVE_FROM_CART, payload: id });
@@ -47,8 +50,9 @@ export const removeFromCart = (id) => async (dispatch, getState) => {
 };
 
 /**
- * @function saveShippingInfo persists user shipping information
- * @param {data} object - accepts an object containing user shipping details
+ * Save user shipping address information to the local storage
+ * @param {*} data shipping address object
+ * @returns shipping address
  */
 export const saveShippingInfo = (data) => async (dispatch) => {
   dispatch({ type: SAVE_SHIPPING_INFO, payload: data });

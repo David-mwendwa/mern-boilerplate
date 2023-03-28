@@ -1,14 +1,22 @@
 import cloudinary from 'cloudinary';
 import { BadRequestError } from '../errors/index.js';
 
+/**
+ * Add cloudinary configurations
+ */
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_KEY,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-// import as {upload} and parse req object and options:{folder, width, crop, public_id etc} as params
-exports.upload = async (req, options) => {
+/**
+ * Upload cloudnary image(s)
+ * @param {*} req express request object - to access image from request body
+ * @param {*} options image options as object i.e folder, width, crop, public_id etc
+ * @returns object containing public_id, secure_url
+ */
+const uploadCloudinaryImage = async (req, options) => {
   try {
     let file =
       req.body?.avatar ||
@@ -31,11 +39,17 @@ exports.upload = async (req, options) => {
     }
   } catch (error) {
     console.log(error);
+    // throw new BadRequestError(error);
   }
 };
 
-// parse image as a parameter
+/**
+ * Delete cloudinary image
+ * @param {*} image image to delete
+ */
 // TODO: confirm if the image param is parsed, is from cloudinary and has public id
-exports.deleteCloudinaryImage = async (image) => {
+const deleteCloudinaryImage = async (image) => {
   await cloudinary.v2.uploader.destroy(image.public_id);
 };
+
+export { uploadCloudinaryImage, deleteCloudinaryImage };

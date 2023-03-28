@@ -1,16 +1,17 @@
 import { Helmet } from 'react-helmet';
 
 /**
- * @param {*} title 
- * @returns title metadata string
- * @invoke as JSX on the page component from which you want the title metadata updated i.e <MetaData title={product.name} />
+ * Dynamically set document's title on head section
+ * @param {*} title string to be parsed as a title
+ * @returns react component with updated head title
+ * @example <MetaData title='About page' />
  */
-const MetaData = ({ title }) => {
+const Metadata = ({ title }) => {
   return (
     <Helmet>
-      <title>{title ? `${title} | <app-name>` : '🌐'}</title>
+      <title>{`${title} | <app-name>`}</title>
     </Helmet>
   );
 };
 
-export default MetaData;
+export default Metadata;

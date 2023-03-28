@@ -2,9 +2,14 @@ import path from 'path';
 import multer from 'multer';
 import { NotFoundError } from '../errors/index.js';
 
+/**
+ * Provide the correct path to the uploads folder - no proceeding slash!
+ * @param {*} uploadPath path to uploads location or client file storage
+ */
+const uploadPath = 'client/public/uploads';
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, 'client/public/uploads'); //TODO: provide the correct path to uploads folder (NO PROCEEDING SLASH)
+    cb(null, uploadPath);
   },
   filename(req, file, cb) {
     cb(
@@ -14,6 +19,12 @@ const storage = multer.diskStorage({
   },
 });
 
+/**
+ * Check for allowed file content types
+ * @param {*} file upload file
+ * @param {*} cb parse an error string incase the file doesn't meet the required content type @example cb('You can only upload images!')
+ * @returns
+ */
 const checkFileType = function (file, cb) {
   const fileTypes = /jpeg|jpg|png|gif|svg/;
   const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
@@ -21,13 +32,15 @@ const checkFileType = function (file, cb) {
   if (mimeType && extName) {
     return cb(null, true);
   } else {
-    cb(new NotFoundError('You can only upload images!')); // or cb('Error: You can only upload images!');
+    cb(new NotFoundError('You can only upload images!'));
   }
 };
 
-// call uploadOptions as middleware in the route where you want to upload the images
-// e.g uploadOptions.single('image') for single image => 'image', param should be the image fieldName
-// e.g uploadOptions.array('images', 10) for multiple images - 10 for max
+/**
+ * Parse form data files through uploadOptions middleware to the request - accepts images only!
+ * @call_method {*} .single(...) parse a single file, usually with the upload file field name @example uploadOptions.single('image')
+ * @call_method {*} .array(...) parse a an array of multiple files, usually with the upload file field name as first param and files limit as second param @example uploadOptions.array('images', 10)
+ */
 export const uploadOptions = multer({
   storage,
   limits: { fileSize: 10000000 },

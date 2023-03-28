@@ -1,5 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
 
+/**
+ * Return a detailed error with a stack trace
+ * @param {*} err error object
+ * @param {*} req request object
+ * @param {*} res response object
+ * @param {*} next call to the next middleware
+ */
 const handleDevelopmentErrors = async (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   res.status(err.statusCode).json({
@@ -8,6 +15,13 @@ const handleDevelopmentErrors = async (err, req, res, next) => {
   });
 };
 
+/**
+ * Return a precise error message
+ * @param {*} err error object
+ * @param {*} req request object
+ * @param {*} res response object
+ * @param {*} next call to the next middleware
+ */
 const handleProductionErrors = async (err, req, res, next) => {
   const defaultError = {
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
@@ -44,9 +58,15 @@ const handleProductionErrors = async (err, req, res, next) => {
     defaultError.statusCode = StatusCodes.UNAUTHORIZED;
     defaultError.message = `Token expired. Please login again.`;
   }
-  res.status(defaultError.statusCode).json({ message: defaultError.message });
+  res
+    .status(defaultError.statusCode)
+    .json({ success: false, message: defaultError.message });
 };
 
+/**
+ * A middleware for handling errrors
+ * @returns handler for production or development errors
+ */
 const errorHandlerMiddleware = (err, req, res, next) => {
   let environment = process.env.NODE_ENV?.trim();
   if (environment && environment === 'production') {

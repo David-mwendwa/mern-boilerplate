@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Please enter your password'],
+      trim: true,
       minlength: [6, 'Your password must be longer than 6 characters'],
       select: false,
     },
@@ -57,10 +58,6 @@ const userSchema = new mongoose.Schema(
       enum: ['admin', 'user'],
       default: 'user',
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
     passwordResetToken: String,
     passwordResetExpiresAt: Date,
     passwordChangedAt: Date,
@@ -70,12 +67,15 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
   },
-  // for virtual properties - don't persist in the db (created on the fly when a request is made)
+  // For virtual properties - don't persist in the db (created on the fly when a request is made)
   { toJSON: { virtuals: true } },
-  { toOject: { virtuals: true } }
+  { toOject: { virtuals: true } },
+  { timestamps: true }
 );
 
-// encrypt password before saving user;
+/**
+ * Encrypt password before saving a user;
+ */
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
@@ -88,18 +88,29 @@ userSchema.pre('save', function () {
   this.passwordChangedAt = Date.now() - 1000;
 });
 
-// filter out inactive users on current find query
+/**
+ * Filter out inactive users on current find query
+ */
 userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
   next();
 });
 
-// compare user password => invoked as user.comparePassword(enteredPassword)
+/**
+ * Compare password - invoked on user object
+ * @param {*} enteredPassword password from the client
+ * @param {*} userPwd actual user pasword on the database. Can also be parsed as this.password
+ * @returns true or false
+ */
 userSchema.methods.comparePassword = async function (enteredPassword, userPwd) {
-  return await bcrypt.compare(enteredPassword, userPwd || this.password); // this.password can also be parsed from controller as user.password
+  return await bcrypt.compare(enteredPassword, userPwd || this.password);
 };
 
-// check if the password was changed after the token was issued
+/**
+ * Check if the password was chnaged after the token was issued - invoked on user object
+ * @param {*} JWTTimestamp JSON Web Token timestamp
+ * @returns true or false
+ */
 userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedAtTimestamp = parseInt(
@@ -111,18 +122,22 @@ userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
   return false;
 };
 
-// return JWT token => invoked as user.signToken()
+/**
+ * Sign JSON Web Token - invoked on user object
+ * @param {*} null
+ * @returns authetication token
+ */
 userSchema.methods.signToken = function () {
-  return jwt.sign(
-    { userId: this._id, role: this.role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_LIFETIME,
-    }
-  );
+  return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_LIFETIME,
+  });
 };
 
-// generate password reset token => invoked as user.createPasswordResetToken()
+/**
+ * Create password rest token - invoked on user object
+ * @param {*} null
+ * @returns password reset token
+ */
 userSchema.methods.createPasswordResetToken = function () {
   // generate token
   const resetToken = crypto.randomBytes(10).toString('hex');

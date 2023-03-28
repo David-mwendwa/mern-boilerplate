@@ -1,26 +1,32 @@
-import User from '../models/User.js';
+import User from '../models/userModel.js';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError } from '../errors/index.js';
 
 import { sendToken } from '../utils/index.js';
+import { deleteOne, getMany, getOne } from '../utils/handleAPI.js';
 
-const getMe = (req, res, next) => {
-  req.params.id = req.user.userId;
+/**
+ * Get currently authenticated user via a middleware
+ * @access Private
+ */
+export const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
   next();
 };
 
 /**
- * @desc    Update current user profile/ my profile
- * @route   PATCH /api/v1/updateMe
+ * Update currently authenticated user
+ * @route   PATCH /api/v1/user/update/me
  * @access  Private
  */
-const updateMe = async (req, res) => {
+export const updateMe = async (req, res) => {
   if (req.body.password || req.body.passwordConfirm) {
     throw new BadRequestError('You cannot update password on this route');
   }
   const { email, name } = req.body; // specify fields that can be updated
+  //TODO: If there is an image, find a way to update it as well, multer/cloudinary. ref-shopit
   const updatedUser = await User.findByIdAndUpdate(
-    { _id: req.user.userId },
+    { _id: req.user.id },
     { email, name },
     { new: true, runValidators: true }
   );
@@ -28,32 +34,42 @@ const updateMe = async (req, res) => {
 };
 
 /**
- * @desc    Delete current user - this deactivates user profile
- * @route   PATCH /api/v1/deleteMe
+ * Delete current user - this deactivates current user
+ * @route   PATCH /api/v1/user/delete/me
  * @access  Private
  */
-const deleteMe = async (req, res, next) => {
+export const deleteMe = async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
   res.status(204).json({ success: true, data: null });
 };
 
+/******************( ADMIN CONTROLLERS )******************/
+
 /**
- * @desc    Update user - should be for admins
- * @route   PATCH /api/v1/updateUser
+ * Update user - for admins
+ * @route   PATCH /api/v1/admin/user/:id
  * @access  Private
  */
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   if (req.body.password || req.body.passwordConfirm) {
     throw new BadRequestError('You cannot update user password');
   }
-  await User.findOneAndUpdate(
-    { _id: req.user.userId },
-    { ...req.body },
-    { new: true, runValidators: true }
-  );
-  res
-    .status(StatusCodes.OK)
-    .json({ success: true, message: 'User updated successfully' });
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+  // TODO: update avatar
+  const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  res.status(StatusCodes.OK).json({ success: true, data: user });
 };
 
-export { getMe, updateMe, deleteMe, updateUser };
+export const getUsers = getMany(User);
+
+export const getUser = getOne(User);
+
+export const deleteUser = deleteOne(User);

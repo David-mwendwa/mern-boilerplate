@@ -1,8 +1,7 @@
 /**
- * @param {*} data as a key(fieldname) value(input) object containing form input values ie {name: 'Iphone 13', image: '....', price: 899 }
- * @returns updated formData - can be POSTed to the backend
- * @invoke handleFormData(data) i.e const formData = handleFormData({name: 'Iphone 13', image: '....', price: 899 })
- * @usage when parsing form-data
+ * Handle multi-part form data
+ * @param {*} data parse data as a key(fieldname) value(input) object containing form input values @example {name: 'David', avatar: '...', ... }
+ * @returns updated formData object
  */
 const handleFormData = (data) => {
   const formData = new FormData();

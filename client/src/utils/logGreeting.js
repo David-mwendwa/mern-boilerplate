@@ -1,6 +1,7 @@
 /**
- * @param {*} name of the user
- * @returns greeting string with user's name based on the time of the day
+ * Greet user
+ * @param {*} name name of the user to greet
+ * @returns greeting string based on the time of the day @example Good Afternoon, David
  */
 const logGreeting = (name = 'user') => {
   let hours = new Date().getHours();

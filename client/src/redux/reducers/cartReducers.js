@@ -5,6 +5,11 @@ import {
 } from '../constants/cartConstants';
 
 const initialState = { cartItems: [], shippingInfo: {} };
+/**
+ * Get cart state on item ADD or DELETE
+ * @returns loading, updated cart, shipping information, error
+ * @example const { loading, cartItems, shippingInfo, error } = useState(state => state.cart)
+ */
 export const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_CART:
@@ -19,10 +24,7 @@ export const cartReducer = (state = initialState, action) => {
           ),
         };
       } else {
-        return {
-          ...state,
-          cartItems: [...state.cartItems, action.payload],
-        };
+        return { ...state, cartItems: [...state.cartItems, action.payload] };
       }
     case REMOVE_FROM_CART:
       return {
@@ -32,10 +34,7 @@ export const cartReducer = (state = initialState, action) => {
         ),
       };
     case SAVE_SHIPPING_INFO:
-      return {
-        ...state,
-        shippingInfo: action.payload,
-      };
+      return { ...state, shippingInfo: action.payload };
     default:
       return state;
   }

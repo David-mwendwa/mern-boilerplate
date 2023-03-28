@@ -1,3 +1,4 @@
+import path from 'path';
 import 'express-async-errors';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
@@ -5,11 +6,7 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import express from 'express';
-const app = express();
 import dotenv from 'dotenv';
-dotenv.config();
-
-import path from 'path';
 
 // import extra security packages
 import helmet from 'helmet';
@@ -18,16 +15,17 @@ import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import hpp from 'hpp';
 
-// import mongoDB connection
-import connectDB from './db/connect.js';
-
-// import routes
-import userRouter from './routes/userRoutes.js';
-import testRouter from './routes/testRoute.js';
-
 // import middleware
 import errorHandlerMiddleware from './middleware/error-handler.js';
 import notFoundMiddleware from './middleware/not-found.js';
+
+// import routes
+import userRouter from './routes/userRoutes.js';
+import orderRouter from './routes/orderRoutes.js';
+import productRouter from './routes/productRoutes.js';
+
+const app = express();
+dotenv.config();
 
 // handle unhandled errors that occur in synchronous code i.e undefined value
 process.on('uncaughtException', (err) => {
@@ -63,7 +61,7 @@ if (process.env.NODE_ENV === 'production') {
   );
 } else {
   app.get('/', (req, res) => {
-    res.send('API is running...');
+    res.json({ success: true, message: 'Homepage' });
   });
 }
 
@@ -81,7 +79,8 @@ app.use(hpp({ whitelist: [''] })); // prevent parameter pollution i.e sort=durat
 
 // use routes
 app.use('/api/v1', userRouter);
-app.use('/api/v1/test', testRouter);
+app.use('/api/v1', orderRouter);
+app.use('/api/v1', productRouter);
 
 //render index page - used after running => npm run build-client
 if (process.env.NODE_ENV === 'PRODUCTION') {
@@ -97,12 +96,13 @@ app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 // start server
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 const DB = process.env.MONGO_URL_TEST;
-mongoose.connect(DB).then(() => console.log('DB connection successful'));
-const server = app.listen(port, () =>
-  console.log(`Server listening on port ${port}`)
-);
+mongoose
+  .connect(DB)
+  .then(() => console.log('mongoDB connection successful'))
+  .catch((err) => console.log(`could not connect to mongoDB`, err));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // handle errors occurring outside express i.e incorrect db password, invalid connection string
 process.on('unhandledRejection', (err) => {

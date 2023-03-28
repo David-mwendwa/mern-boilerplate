@@ -2,14 +2,14 @@ import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 /**
- * A route component utility to restrict unauthorized access 
+ * A route component utility for the private resources users
  * @param {*} children protected route component
- * @returns redirect to homepage or to a protected route component if authorized/authenticated
+ * @returns redirect to dashboard if the user is authenticated
  * @example <Route
-              path='/admin'
+              path='/dashboard'
               element={
                 <Protected>
-                  <Dashbaord isAdmin={true} />
+                  <Dashbaord />
                 </Protected>
               }
               exact
@@ -17,12 +17,11 @@ import { useSelector } from 'react-redux';
  */
 const Protected = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
-  const isAuthorized =
-    (user && (/admin/i.test(user.role) || user.isAdmin)) || false;
 
-  if (!isAuthorized) {
-    return <Navigate to='/' replace />;
+  const isAuthorized = !!user?.name;
+  if (isAuthorized) {
+    return children;
   }
-  return children;
+  return <Navigate to='/' replace />;
 };
 export default Protected;

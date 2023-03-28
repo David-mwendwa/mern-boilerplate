@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User from '../models/userModel.js';
 import { StatusCodes } from 'http-status-codes';
 import {
   BadRequestError,
@@ -6,10 +6,10 @@ import {
   UnauthenticatedError,
 } from '../errors/index.js';
 
-import { createTokenUser, sendToken, sendEmail } from '../utils/index.js';
+import { sendToken, sendEmail } from '../utils/index.js';
 
 /**
- * @desc    Register user
+ * Register user
  * @route   POST /api/v1/user/register
  * @access  Public
  */
@@ -29,12 +29,11 @@ const register = async (req, res, next) => {
       url: '',
     },
   });
-  const tokenUser = createTokenUser(user);
-  sendToken(tokenUser || user, StatusCodes.CREATED, res);
+  sendToken(user, StatusCodes.CREATED, res);
 };
 
 /**
- * @desc    Login user
+ * Login user
  * @route   POST /api/v1/user/login
  * @access  Public
  */
@@ -58,12 +57,12 @@ const login = async (req, res) => {
 };
 
 /**
- * @desc    Update user password
+ * Update authenticated user password
  * @route   PATCH /api/v1/user/password/update
  * @access  Private
  */
 const updatePassword = async (req, res, next) => {
-  const user = await User.findById(req.user.userId).select('+password');
+  const user = await User.findById(req.user.id).select('+password');
   const { passwordCurrent, password, passwordConfirm } = req.body;
   // compare current password with the one is the database
   const isCurrentPasswordCorrect = await user.comparePassword(
@@ -82,7 +81,7 @@ const updatePassword = async (req, res, next) => {
 };
 
 /**
- * @desc    Send password reset token
+ * Send password reset token
  * @route   POST /api/v1/user/password/forgot
  * @access  Private
  */
@@ -122,7 +121,7 @@ const forgotPassword = async (req, res, next) => {
 };
 
 /**
- * @desc    Reset password
+ * Reset password with the help of reset token
  * @route   PATCH /api/v1/user/password/reset/:token
  * @access  Private
  */
@@ -156,12 +155,13 @@ const resetPassword = async (req, res, next) => {
 };
 
 /**
- * @desc    Logout user
+ * Log user out
  * @route   GET /api/v1/user/logout
  * @access  Private
  */
 const logout = async (req, res, next) => {
   res.cookie('token', null, { expires: new Date(Date.now()), httpOnly: true });
+  // TODO: remove authorization from request headers
   res.status(StatusCodes.OK).json({ success: true, message: 'Logged out' });
 };
 

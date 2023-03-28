@@ -1,8 +1,9 @@
 /**
- * @param {*} contentType as the image mimetype
- * @param {*} data as the image buffer
- * @returns image source url - usable on the client
- * @invoke on the img element i.e <img src={readBinaryFile({ contentType, data })} />
+ * Read binary file
+ * @param {*} contentType image mimetype
+ * @param {*} data file buffer i.e image
+ * @returns image source url usable on the client
+ * @example <img src={readBinaryFile({ contentType, data })} />
  */
 const readBinaryFile = ({ contentType, data }) => {
   console.log({ contentType, data });

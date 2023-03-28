@@ -1,8 +1,21 @@
 import React from 'react';
 
 /**
- * @param {*}, type, name, value, handleChange, labelText
- * @returns html element containing form label + input
+ * Create form input row
+ * @param {*} type input type
+ * @param {*} name input name
+ * @param {*} value input value
+ * @param {*} handleChange onClick event handler,
+ * @param {*} labelText input label text
+ * @returns Designed form row component @example <div>
+      <label htmlFor='email'>Email</label>
+      <input
+        type='email'
+        value={'david@example.com'}
+        name='email'
+        onChange={'...'}
+      />
+    </div>
  */
 const FormRow = ({ type, name, value, handleChange, labelText }) => {
   return (
