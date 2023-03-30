@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 /**
- * Verify expiration for JWT
+ * Verify expiration time for JWT
  * @param {*} token token string
  * @returns Boolean
  */

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import StripeCheckout from 'react-stripe-checkout';
-import { placeOrder } from '../../redux/actions/orderActions';
+import { placeOrder } from '../../../redux/actions/orderActions';
 
 /**
  * Create stripe checkout button
