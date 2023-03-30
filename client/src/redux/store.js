@@ -29,6 +29,10 @@ const currentUserFromStorage = localStorage.getItem('user')
   ? JSON.parse(localStorage.getItem('user'))
   : {};
 
+const authTokenFromStorage = localStorage.getItem('token')
+  ? JSON.parse(localStorage.getItem('token'))
+  : null;
+
 const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
   ? JSON.parse(localStorage.getItem('shippingAddress'))
   : {};
@@ -38,7 +42,10 @@ const initialState = {
     cartItems: cartItemsFromStorage,
     shippingAddress: shippingAddressFromStorage,
   },
-  auth: { user: currentUserFromStorage },
+  auth: {
+    user: currentUserFromStorage,
+    token: authTokenFromStorage,
+  },
 };
 
 const middleware = [thunk];
