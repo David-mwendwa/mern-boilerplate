@@ -75,6 +75,9 @@ export const ordersReducer = (state = { orders: [] }, action) => {
     case ORDERS_GET_FAIL:
       return { ...state, error: action.payload };
 
+    case CLEAR_ERRORS:
+      return { ...state, error: null };
+
     default:
       return state;
   }

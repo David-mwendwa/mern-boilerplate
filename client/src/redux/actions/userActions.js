@@ -259,8 +259,12 @@ export const resetUser = () => async (dispatch) => {
 };
 
 /**
- * Clear errors
+ * Clear errors - dispatch after displaying error
  * @returns null error object
+ * @example if (error) {
+      // do something
+      dispatch(clearErrors());
+    }
  */
 export const clearErrors = () => async (dispatch) => {
   dispatch({ type: CLEAR_ERRORS });

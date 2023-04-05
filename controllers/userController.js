@@ -1,5 +1,4 @@
 import User from '../models/userModel.js';
-import { StatusCodes } from 'http-status-codes';
 import { BadRequestError } from '../errors/index.js';
 
 import { sendToken } from '../utils/index.js';
@@ -7,11 +6,12 @@ import { deleteOne, getMany, getOne } from '../utils/handleAPI.js';
 
 /**
  * Get currently authenticated user via a middleware
+ * @route   GET /api/v1/user/me
  * @access Private
  */
-export const getMe = (req, res, next) => {
-  req.params.id = req.user.id;
-  next();
+export const getMe = async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+  res.status(200).json({ success: true, data: user });
 };
 
 /**
@@ -30,7 +30,7 @@ export const updateMe = async (req, res) => {
     { email, name },
     { new: true, runValidators: true }
   );
-  sendToken(updatedUser, StatusCodes.OK, res);
+  sendToken(updatedUser, 200, res);
 };
 
 /**
@@ -65,7 +65,7 @@ export const updateUser = async (req, res) => {
     runValidators: true,
     useFindAndModify: false,
   });
-  res.status(StatusCodes.OK).json({ success: true, data: user });
+  res.status(200).json({ success: true, data: user });
 };
 
 export const getUsers = getMany(User);

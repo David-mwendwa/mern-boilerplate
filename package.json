@@ -1,5 +1,5 @@
 {
-  "name": "xxxx",
+  "name": "mern-app",
   "version": "1.0.0",
   "description": "####",
   "main": "index.js",
@@ -13,7 +13,8 @@
     "server": "nodemon server --ignore client",
     "server:prod": "SET NODE_ENV=production & nodemon server.js --ignore client",
     "client": "npm start --prefix client",
-    "start": "concurrently --kill-others-on-fail \" npm run server\" \" npm run client\""
+    "start": "concurrently --kill-others-on-fail \" npm run server\" \" npm run client\"",
+    "seeder": "node utils/seeder"
   },
   "keywords": [],
   "author": "",

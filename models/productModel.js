@@ -36,7 +36,7 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       enum: {
-        values: ['...input categories'],
+        values: ['general', '...'],
         message: 'Please select correct category for the product',
       },
     },

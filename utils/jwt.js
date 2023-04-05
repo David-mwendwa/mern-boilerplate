@@ -15,14 +15,10 @@ export const verifyToken = async ({ token }) => {
   return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 };
 
-export const checkTokenExpiration = async ({ token }) => {
-  return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-};
-
 /**
  * Create and save authenticated user token in the cookie
  * @param {*} user user details to be returned with the token on response upon authentication
- * @param {*} statusCode response status code @example 200
+ * @param {*} statusCode response status code
  * @param {*} res response object
  * @param {*} options cookie options
  * @param {*} signToken create token

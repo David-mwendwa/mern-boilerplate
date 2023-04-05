@@ -12,7 +12,7 @@ class APIFeatures {
     this.queryStr = queryStr;
   }
 
-  // make a default search by name, keyword as the value
+  // make a default search by name, keyword as the value i.e ?keyword='macbook'
   search() {
     const keyword = this.queryStr.keyword
       ? {
@@ -57,9 +57,9 @@ class APIFeatures {
   }
 
   paginate() {
-    const page = parseInt(this.queryStr.page) || 1;
+    const currentPage = parseInt(this.queryStr.page) || 1;
     const limit = parseInt(this.queryStr.limit) || 100; // results per page
-    const skip = (page - 1) * limit;
+    const skip = (currentPage - 1) * limit;
     this.query = this.query.skip(skip).limit(limit);
     return this;
   }
@@ -125,7 +125,7 @@ const getMany = (Model) => async (req, res, next) => {
 
   res.status(StatusCodes.OK).json({
     success: true,
-    totalCount: doc.length,
+    totalCount: await Model.countDocuments(),
     data: doc,
   });
 };

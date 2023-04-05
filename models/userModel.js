@@ -39,14 +39,17 @@ const userSchema = new mongoose.Schema(
       },
     },
     avatar: {
-      // cloudinary - required: true
+      // cloudinary
       public_id: {
         type: String,
-        required: false,
+        required: true,
+        default: `avatar_${Date.now()}`,
       },
       url: {
         type: String,
-        required: false,
+        required: true,
+        default:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png',
       },
       // multer
       data: Buffer,
@@ -98,12 +101,12 @@ userSchema.pre(/^find/, function (next) {
 
 /**
  * Compare password - invoked on user object
- * @param {*} enteredPassword password from the client
- * @param {*} userPwd actual user pasword on the database. Can also be parsed as this.password
+ * @param {*} inputPassword password from the request body
+ * @param {*} userPwd (optional) actual user pasword on the database. Can also be parsed as this.password
  * @returns true or false
  */
-userSchema.methods.comparePassword = async function (enteredPassword, userPwd) {
-  return await bcrypt.compare(enteredPassword, userPwd || this.password);
+userSchema.methods.comparePassword = async function (inputPassword, userPwd) {
+  return await bcrypt.compare(inputPassword, userPwd || this.password);
 };
 
 /**

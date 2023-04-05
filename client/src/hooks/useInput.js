@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 /**
- * A hook to access react forms
+ * A hook to access react forms (text & file inputs)
  * @param {*} initialValues initial form state
  * @param {*} values updated form input state object
  * @param {*} resetValues resetValues function for resetting to initialValues
@@ -12,6 +12,7 @@ import { useState } from 'react';
               value2: false,
               value3: {},
               value4: [],
+              image: ''
             });
  */
 const useInput = (initialValues) => {
@@ -21,7 +22,13 @@ const useInput = (initialValues) => {
 
   const handleChange = (e) => {
     if (e.target.files) {
-      setValues({ ...values, [e.target.name]: e.target.files[0] });
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setValues({ ...values, [e.target.name]: reader.result });
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
     } else setValues({ ...values, [e.target.name]: e.target.value });
   };
 
