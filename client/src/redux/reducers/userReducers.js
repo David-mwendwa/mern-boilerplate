@@ -29,6 +29,9 @@ import {
   USERS_GET_REQUEST,
   USERS_GET_SUCCESS,
   USERS_GET_FAIL,
+  PASSWORD_RESET_REQUEST,
+  PASSWORD_RESET_SUCCESS,
+  PASSWORD_RESET_FAIL,
   CLEAR_ERRORS,
 } from '../constants/userConstants.js';
 
@@ -133,6 +136,30 @@ export const userReducer = (state = { user: {} }, action) => {
 
     case USER_RESET:
       return {};
+
+    default:
+      return state;
+  }
+};
+
+/**
+ * Handle password actions - reset request, update
+ * @returns success status
+ * @example const {loading, resetRequested, error} = useState(state => state.password)
+ */
+export const passwordReducer = (state = {}, action) => {
+  switch (action.type) {
+    case PASSWORD_RESET_REQUEST:
+      return { loading: true };
+
+    case PASSWORD_RESET_SUCCESS:
+      return { loading: false, resetRequested: true };
+
+    case PASSWORD_RESET_FAIL:
+      return { loading: false, error: action.payload };
+
+    case CLEAR_ERRORS:
+      return { ...state, error: null };
 
     default:
       return state;

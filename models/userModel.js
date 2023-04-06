@@ -141,18 +141,20 @@ userSchema.methods.signToken = function () {
  * @param {*} null
  * @returns password reset token
  */
-userSchema.methods.createPasswordResetToken = function () {
+userSchema.methods.generatePasswordResetToken = function () {
   // generate token
   const resetToken = crypto.randomBytes(10).toString('hex');
 
-  // hash and set to passwordResetToken
+  // hash and set to passwordResetToken field in the document
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
 
-  // set token expire time
+  // set token expiry time - 30 minutes
   this.passwordResetExpiresAt = Date.now() + 30 * 60 * 1000;
+
+  // return unhashed token version
   return resetToken;
 };
 

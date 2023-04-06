@@ -30,6 +30,9 @@ import {
   USERS_GET_REQUEST,
   USERS_GET_SUCCESS,
   USERS_GET_FAIL,
+  PASSWORD_RESET_REQUEST,
+  PASSWORD_RESET_SUCCESS,
+  PASSWORD_RESET_FAIL,
   CLEAR_ERRORS,
 } from '../constants/userConstants';
 
@@ -163,6 +166,31 @@ export const deleteMe = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: USER_PROFILE_DELETE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+/**
+ * Generate password reset email
+ * @param {*} email email object to request password reset with
+ * @returns success status
+ */
+export const requestPasswordReset = (email) => async (dispatch) => {
+  dispatch({ type: PASSWORD_RESET_REQUEST });
+
+  try {
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+    };
+    const { data } = await axios.post('/api/v1/password/forgot', email, config);
+    dispatch({ type: PASSWORD_RESET_SUCCESS, payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: PASSWORD_RESET_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

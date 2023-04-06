@@ -11,7 +11,7 @@ cloudinary.config({
 
 /**
  * Upload file to cloudinary
- * @param {*} req file request body e.g req.body.image
+ * @param {*} file file request body e.g req.body.image
  * @param {*} options image options as object i.e folder: path to cloudinary storage folder, width, crop, public_id etc
  * @returns cloudinary result object i.e contains public_id, secure_url, url etc
  */

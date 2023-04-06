@@ -64,11 +64,8 @@ const login = async (req, res) => {
 const updatePassword = async (req, res, next) => {
   const user = await User.findById(req.user.id).select('+password');
   const { passwordCurrent, password, passwordConfirm } = req.body;
-  // compare current password with the one is the database
-  const isCurrentPasswordCorrect = await user.comparePassword(
-    passwordCurrent,
-    user.password
-  );
+
+  const isCurrentPasswordCorrect = await user.comparePassword(passwordCurrent);
   if (!isCurrentPasswordCorrect) {
     throw new BadRequestError('Your current password is incorrect');
   }
@@ -81,34 +78,38 @@ const updatePassword = async (req, res, next) => {
 };
 
 /**
- * Send password reset token
+ * Generate password reset token and email
  * @route   POST /api/v1/user/password/forgot
  * @access  Private
  */
-const forgotPassword = async (req, res, next) => {
+const requestPasswordReset = async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     throw new NotFoundError('User not found');
   }
 
-  // get reset token
-  const resetToken = user.createPasswordResetToken();
+  const resetToken = user.generatePasswordResetToken();
   await user.save({ validateBeforeSave: false }); // validateBeforeSave option is very crucial here!
 
-  // create reset password url
+  // url to the reset page TODO: find a way to get the origin dynamically for prod/dev environment
   const resetUrl = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/user/password/reset/${resetToken}`;
-  const message = `Forgot your password? Submit a PATCH request with your new password to: ${resetUrl}.\nIf you didn't forget your password, please ignore this email.`;
+  const message = `Forgot your password? Click the URL below to reset \n\n${resetUrl} \n\nIf you haven't requested for this email, please ignore it.`;
+  const html = `<p>Forgot your password? Click the URL below to reset</p>
+                <h5><a href="${resetUrl}">${resetUrl}</a></h5>
+                <p>If you haven't requested for this email, please ignore it.</p>`;
+
   try {
     await sendEmail({
       email: user.email,
-      subject: '<app-name> Password Recovery', // prefix application name
+      subject: '<appname> Password Recovery',
       message,
+      html,
     });
     res.status(StatusCodes.OK).json({
       success: true,
-      message: `Email sent to: ${user.email}`,
+      message: `Password recovery email send to: ${user.email}`,
     });
   } catch (error) {
     user.passwordResetToken = undefined;
@@ -168,7 +169,7 @@ const logout = async (req, res, next) => {
 export {
   register,
   login,
-  forgotPassword,
+  requestPasswordReset,
   resetPassword,
   updatePassword,
   logout,
