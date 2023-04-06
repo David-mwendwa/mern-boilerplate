@@ -23,8 +23,9 @@ export const updateMe = async (req, res) => {
   if (req.body.password || req.body.passwordConfirm) {
     throw new BadRequestError('You cannot update password on this route');
   }
+
   const { email, name } = req.body; // specify fields that can be updated
-  //TODO: If there is an image, find a way to update it as well, multer/cloudinary. ref-shopit
+  //TODO: If there is an image, find a way to update it as well, multer/cloudinary. ref-shopit/bookify
   const updatedUser = await User.findByIdAndUpdate(
     { _id: req.user.id },
     { email, name },

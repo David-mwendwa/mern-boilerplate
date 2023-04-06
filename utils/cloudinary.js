@@ -18,14 +18,15 @@ cloudinary.config({
 // TODO: add a functionality to upload pdf, doc or other files
 const uploadToCloudinary = async (file, options) => {
   try {
-    if (file) {
+    let match = /data:([a-z\/]+)/.exec(file);
+    if (file && match && /image/.test(match[1])) {
       return await cloudinary.v2.uploader.upload(file, {
         resource_type: 'auto',
         ...options,
       });
-    }
+    } else throw `You can only upload images! (mimeType:${match[1]})`;
   } catch (error) {
-    console.log(error);
+    throw new Error(error);
   }
 };
 
@@ -34,7 +35,13 @@ const uploadToCloudinary = async (file, options) => {
  * @param {*} id id of the file to delete (usually public_id)
  */
 const removeFromCloudinary = async (id) => {
-  await cloudinary.v2.uploader.destroy(id);
+  try {
+    if (id) {
+      await cloudinary.v2.uploader.destroy(id);
+    } else throw 'Please provide cloudinary id';
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export { uploadToCloudinary, removeFromCloudinary };
