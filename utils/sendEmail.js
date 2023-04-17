@@ -1,5 +1,9 @@
 import nodemailer from 'nodemailer';
 
+/**
+ * Send email through nodemailer
+ * @param {*} options mail options e.g email receiver, subject, text or html
+ */
 export const sendEmail = async (options) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -15,13 +19,13 @@ export const sendEmail = async (options) => {
 
     const message = {
       from: `${process.env.SMTP_FROM_NAME} <${process.env.SMTP_FROM_EMAIL}>`,
-      to: options.email,
-      subject: options.subject,
-      html: options.html,
-      // text: options.message,
+      to: options?.email,
+      subject: options?.subject,
+      html: options?.html,
+      // text: options?.message,
     };
 
-    await transporter.sendMail(message);
+    return await transporter.sendMail(message);
   } catch (error) {
     throw new Error(error);
   }

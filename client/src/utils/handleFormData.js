@@ -1,7 +1,10 @@
 /**
- * Handle multi-part form data
- * @param {*} data parse data as a key(fieldname) value(input) object containing form input values @example {name: 'David', avatar: '...', ... }
- * @returns updated formData object
+ * Handle multi-part form data.
+ * Useful when submitting form values as 'Form Data' i.e when using multer file uploader on backend
+ * @param {*} data form input data as a key(fieldname) value(input) object
+ * @returns formData object
+ * @example handleFormData({name: 'David', avatar: '...', ... })
+ *
  */
 const handleFormData = (data) => {
   const formData = new FormData();

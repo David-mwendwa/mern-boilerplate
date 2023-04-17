@@ -100,7 +100,7 @@ userSchema.pre(/^find/, function (next) {
 });
 
 /**
- * Compare password - invoked on user object
+ * Compare password
  * @param {*} inputPassword password from the request body
  * @param {*} userPwd (optional) actual user pasword on the database. Can also be parsed as this.password
  * @returns true or false
@@ -110,7 +110,7 @@ userSchema.methods.comparePassword = async function (inputPassword, userPwd) {
 };
 
 /**
- * Check if the password was chnaged after the token was issued - invoked on user object
+ * Check if the password was chnaged after the token was issued
  * @param {*} JWTTimestamp JSON Web Token timestamp
  * @returns true or false
  */
@@ -126,7 +126,7 @@ userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
 };
 
 /**
- * Sign JSON Web Token - invoked on user object
+ * Sign JSON Web Token
  * @param {*} null
  * @returns authetication token
  */
@@ -137,13 +137,13 @@ userSchema.methods.signToken = function () {
 };
 
 /**
- * Create password rest token - invoked on user object
+ * Create password rest token
  * @param {*} null
  * @returns password reset token
  */
 userSchema.methods.generatePasswordResetToken = function () {
   // generate token
-  const resetToken = crypto.randomBytes(10).toString('hex');
+  const resetToken = crypto.randomBytes(20).toString('hex');
 
   // hash and set to passwordResetToken field in the document
   this.passwordResetToken = crypto

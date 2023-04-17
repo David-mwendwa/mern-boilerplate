@@ -50,14 +50,19 @@ export const createStripeOrder = async (req, res) => {
   });
   order.save();
 
-  res.json({ success: true, message: 'Payment successful' });
+  res.staus(200).json({ success: true, data: order });
 };
 
+/**
+ * Get orders - for currently authenticated user
+ * @route   GET /api/v1/orders/me
+ * @access  Private
+ */
 export const getMyOrders = async (req, res) => {
   const orders = await Order.find({ user: req.user.id }).sort({
     _id: -1,
   });
-  res.json({ success: true, data: orders });
+  res.status(200).json({ success: true, data: orders });
 };
 
 export const getOrders = getMany(Order);

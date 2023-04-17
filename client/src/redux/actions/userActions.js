@@ -30,6 +30,9 @@ import {
   USERS_GET_REQUEST,
   USERS_GET_SUCCESS,
   USERS_GET_FAIL,
+  PASSWORD_FORGOT_REQUEST,
+  PASSWORD_FORGOT_SUCCESS,
+  PASSWORD_FORGOT_FAIL,
   PASSWORD_RESET_REQUEST,
   PASSWORD_RESET_SUCCESS,
   PASSWORD_RESET_FAIL,
@@ -96,6 +99,7 @@ export const logout = () => async (dispatch) => {
   try {
     await axios.get('/api/v1/user/logout');
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     dispatch({ type: USER_LOGOUT_SUCCESS });
   } catch (error) {
     dispatch({
@@ -109,11 +113,11 @@ export const logout = () => async (dispatch) => {
 };
 
 /**
- * Get currently authenticated user details
+ * Get currently authenticated user profile details
  * @param {*} null
  * @returns authenticated user document
  */
-export const getMe = () => async (dispatch) => {
+export const getProfile = () => async (dispatch) => {
   dispatch({ type: USER_PROFILE_REQUEST });
 
   try {
@@ -131,15 +135,15 @@ export const getMe = () => async (dispatch) => {
 };
 
 /**
- * Update currently authenticated user
- * @param {*} user - user update data
+ * Update currently authenticated user profile
+ * @param {*} user update data
  * @returns success status
  */
-export const updateMe = (user) => async (dispatch) => {
+export const updateProfile = (user) => async (dispatch) => {
   dispatch({ type: USER_PROFILE_UPDATE_REQUEST });
 
   try {
-    await axios.patch(`/api/v1/user/update/me`, user);
+    await axios.patch(`/api/v1/user/me/update`, user);
     dispatch({ type: USER_PROFILE_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -157,11 +161,11 @@ export const updateMe = (user) => async (dispatch) => {
  * @param {*} null
  * @returns success status
  */
-export const deleteMe = () => async (dispatch) => {
+export const deleteProfile = () => async (dispatch) => {
   dispatch({ type: USER_PROFILE_DELETE_REQUEST });
 
   try {
-    await axios.patch(`/api/v1/user/delete/me`);
+    await axios.patch(`/api/v1/user/me/delete`);
     dispatch({ type: USER_PROFILE_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -175,19 +179,45 @@ export const deleteMe = () => async (dispatch) => {
 };
 
 /**
- * Generate password reset email
- * @param {*} email email object to request password reset with
+ * Generate password reset email if a user forgot password
+ * @param {*} email object with email value
  * @returns success status
  */
 export const requestPasswordReset = (email) => async (dispatch) => {
+  dispatch({ type: PASSWORD_FORGOT_REQUEST });
+
+  try {
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+    };
+    await axios.post('/api/v1/password/forgot', email, config);
+    dispatch({ type: PASSWORD_FORGOT_SUCCESS });
+  } catch (error) {
+    dispatch({
+      type: PASSWORD_FORGOT_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+/**
+ * Reset password
+ * @param {*} token reset token string
+ * @param {*} passwords object containig password and passwordConfirm values
+ * @returns success status
+ */
+export const resetPassword = (token, passwords) => async (dispatch) => {
   dispatch({ type: PASSWORD_RESET_REQUEST });
 
   try {
     const config = {
       headers: { 'Content-Type': 'application/json' },
     };
-    const { data } = await axios.post('/api/v1/password/forgot', email, config);
-    dispatch({ type: PASSWORD_RESET_SUCCESS, payload: data.message });
+    await axios.patch(`/api/password/reset/${token}`, passwords, config);
+    dispatch({ type: PASSWORD_RESET_SUCCESS });
   } catch (error) {
     dispatch({
       type: PASSWORD_RESET_FAIL,
@@ -279,7 +309,7 @@ export const deleteUser = (id) => async (dispatch) => {
 };
 
 /**
- * Reset user after UPDATE or DELETE
+ * Reset user after UPDATE or DELETE - execute it when the component unmounts
  * @returns empty object
  */
 export const resetUser = () => async (dispatch) => {

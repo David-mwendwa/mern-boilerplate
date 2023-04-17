@@ -24,7 +24,7 @@ const uploadToCloudinary = async (file, options) => {
         resource_type: 'auto',
         ...options,
       });
-    } else throw `You can only upload images! (mimeType:${match[1]})`;
+    } else throw `You can only upload images! (uploaded mimeType:${match[1]})`;
   } catch (error) {
     throw new Error(error);
   }
@@ -37,7 +37,7 @@ const uploadToCloudinary = async (file, options) => {
 const removeFromCloudinary = async (id) => {
   try {
     if (id) {
-      await cloudinary.v2.uploader.destroy(id);
+      return await cloudinary.v2.uploader.destroy(id);
     } else throw 'Please provide cloudinary id';
   } catch (error) {
     throw new Error(error);

@@ -158,7 +158,7 @@ export const deleteOrder = (id) => async (dispatch) => {
 };
 
 /**
- * Reset order state after UPDATE or DELETE
+ * Reset order state after UPDATE or DELETE - execute it when the component unmounts
  * @returns empty object
  */
 export const resetOrder = () => async (dispatch) => {

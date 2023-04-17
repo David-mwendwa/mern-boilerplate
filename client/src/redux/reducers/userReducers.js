@@ -29,6 +29,9 @@ import {
   USERS_GET_REQUEST,
   USERS_GET_SUCCESS,
   USERS_GET_FAIL,
+  PASSWORD_FORGOT_REQUEST,
+  PASSWORD_FORGOT_SUCCESS,
+  PASSWORD_FORGOT_FAIL,
   PASSWORD_RESET_REQUEST,
   PASSWORD_RESET_SUCCESS,
   PASSWORD_RESET_FAIL,
@@ -42,7 +45,10 @@ import {
  * @param {*} action source of information for the store
  * @returns loading, authenticated user details and error message
  */
-export const authReducer = (state = { userInfo: {} }, action) => {
+export const authReducer = (
+  state = { loading: true, userInfo: {} },
+  action
+) => {
   switch (action.type) {
     case USER_LOGIN_REQUEST:
     case USER_REGISTER_REQUEST:
@@ -101,7 +107,7 @@ export const usersReducer = (state = { users: [] }, action) => {
 
 /**
  * Get user state on CREATE, READ ONE, UPDATE or DELETE
- * @returns loading, order, created, updated, deleted and error
+ * @returns loading, order, created, updated, deleted and error status
  * @example const {loading, user, created, updated, deleted, error} = useState(state => state.user)
  */
 export const userReducer = (state = { user: {} }, action) => {
@@ -143,18 +149,23 @@ export const userReducer = (state = { user: {} }, action) => {
 };
 
 /**
- * Handle password actions - reset request, update
- * @returns success status
- * @example const {loading, resetRequested, error} = useState(state => state.password)
+ * Handle password actions - reset request, reset/update
+ * @returns loading, resetRequested, reset, error status
+ * @example const {loading, resetRequested, reset, error} = useState(state => state.password)
  */
 export const passwordReducer = (state = {}, action) => {
   switch (action.type) {
+    case PASSWORD_FORGOT_REQUEST:
     case PASSWORD_RESET_REQUEST:
       return { loading: true };
 
-    case PASSWORD_RESET_SUCCESS:
+    case PASSWORD_FORGOT_SUCCESS:
       return { loading: false, resetRequested: true };
 
+    case PASSWORD_RESET_SUCCESS:
+      return { loading: false, reset: true };
+
+    case PASSWORD_FORGOT_FAIL:
     case PASSWORD_RESET_FAIL:
       return { loading: false, error: action.payload };
 

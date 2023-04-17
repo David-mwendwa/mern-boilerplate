@@ -1,4 +1,3 @@
-import { StatusCodes } from 'http-status-codes';
 import { NotFoundError } from '../errors/index.js';
 
 /**
@@ -11,7 +10,6 @@ class APIFeatures {
     this.query = query;
     this.queryStr = queryStr;
   }
-
   // make a default search by name, keyword as the value i.e ?keyword='macbook'
   search() {
     const keyword = this.queryStr.keyword
@@ -25,7 +23,6 @@ class APIFeatures {
     this.query = this.query.find({ ...keyword });
     return this;
   }
-
   filter() {
     const queryCopy = { ...this.queryStr };
     const excludedFilds = ['keyword', 'page', 'sort', 'limit', 'fields'];
@@ -35,7 +32,6 @@ class APIFeatures {
     this.query = this.query.find(JSON.parse(queryStr));
     return this;
   }
-
   sort() {
     if (this.queryStr.sort) {
       const sortBy = this.queryStr.sort.split(',').join(' ');
@@ -45,7 +41,6 @@ class APIFeatures {
     }
     return this;
   }
-
   limitFields() {
     if (this.queryStr.fields) {
       const fields = this.queryStr.fields.split(',').join(' ');
@@ -55,7 +50,6 @@ class APIFeatures {
     }
     return this;
   }
-
   paginate() {
     const currentPage = parseInt(this.queryStr.page) || 1;
     const limit = parseInt(this.queryStr.limit) || 100; // results per page
@@ -72,32 +66,27 @@ class APIFeatures {
  */
 const createOne = (Model) => async (req, res, next) => {
   const doc = await Model.create(req.body);
-
-  res.status(StatusCodes.CREATED).json({
-    success: true,
-    data: doc,
-  });
+  res.status(200).json({ success: true, data: doc });
 };
 
 /**
  * A function to query and get one document
  * @param {*} Model mongoose data model
  * @param {*} populateOptions options to parse to mongoose populate method
- * @example getOne(<Model>, { path: 'user', select: 'name email role'})
+ * @example (singlepopulate) getOne(<Model>, { path: 'user', select: 'name email role'})
+ * @example (multiplepupulates) getOne(<Model>, [{path: 'user', select: ''}, {path: 'product', select: ''}])
  * @returns one document
  */
 const getOne = (Model, populateOptions) => async (req, res, next) => {
   let query = Model.findById(req.params.id);
-
   if (populateOptions) {
     query = query.populate(populateOptions);
   }
   const doc = await query;
-
   if (!doc) {
     throw new NotFoundError('No document found with that ID');
   }
-  res.status(StatusCodes.OK).json({ success: true, data: doc });
+  res.status(200).json({ success: true, data: doc });
 };
 
 /**
@@ -108,7 +97,8 @@ const getOne = (Model, populateOptions) => async (req, res, next) => {
 const getMany = (Model) => async (req, res, next) => {
   let filter = {};
   // handle nested routes - param kay has to be similar to the property in the database @example {productId: req.params.productId}
-  if (!!Object.keys(req.params).length) {
+  const isNestedRoute = !!Object.keys(req.params).length;
+  if (isNestedRoute) {
     for (const key in req.params) {
       filter[[key]] = req.params[key];
     }
@@ -123,7 +113,7 @@ const getMany = (Model) => async (req, res, next) => {
 
   const doc = await features.query;
 
-  res.status(StatusCodes.OK).json({
+  res.status(200).json({
     success: true,
     totalCount: await Model.countDocuments(),
     data: doc,
@@ -140,15 +130,10 @@ const updateOne = (Model) => async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-
   if (!doc) {
     throw new NotFoundError('No document found with that ID');
   }
-
-  res.status(StatusCodes.OK).json({
-    success: true,
-    data: doc,
-  });
+  res.status(201).json({ success: true, data: doc });
 };
 
 /**
@@ -158,15 +143,10 @@ const updateOne = (Model) => async (req, res, next) => {
  */
 const deleteOne = (Model) => async (req, res, next) => {
   const doc = await Model.findByIdAndRemove(req.params.id);
-
   if (!doc) {
     throw new NotFoundError('No document found with that ID');
   }
-
-  res.status(StatusCodes.NO_CONTENT).json({
-    success: true,
-    data: null,
-  });
+  res.status(204).json({ success: true, data: null });
 };
 
 export { APIFeatures, getMany, getOne, createOne, updateOne, deleteOne };

@@ -1,6 +1,5 @@
 import path from 'path';
 import multer from 'multer';
-import { NotFoundError } from '../errors/index.js';
 
 /**
  * Provide the correct path to the uploads folder - no proceeding slash!
@@ -32,7 +31,11 @@ const checkFileType = function (file, cb) {
   if (mimeType && extName) {
     return cb(null, true);
   } else {
-    cb(new NotFoundError('You can only upload images!'));
+    cb(
+      new Error(
+        `You can only upload images! (uploaded mimeType:${file.mimetype})`
+      )
+    );
   }
 };
 

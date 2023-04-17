@@ -1,32 +1,31 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  register,
-  login,
-  requestPasswordReset,
-  resetPassword,
-  logout,
-  updatePassword,
-} from '../controllers/authController.js';
+import { register, login, logout } from '../controllers/authController.js';
 import {
   getUser,
   getUsers,
-  updateMe,
-  deleteMe,
+  updateProfile,
+  deleteProfile,
   updateUser,
+  updatePassword,
   deleteUser,
+  getProfile,
+  requestPasswordReset,
+  resetPassword,
 } from '../controllers/userController.js';
 import { protect, authorizeRoles } from '../middleware/auth.js';
 
 router.route('/user/register').post(register);
 router.route('/user/login').post(login);
-router.route('/user/update/me').patch(protect, updateMe);
-router.route('/user/delete/me').patch(protect, deleteMe);
+router.route('/user/logout').get(logout);
+
+router.route('/user/me').get(protect, getProfile);
+router.route('/user/me/update').patch(protect, updateProfile);
+router.route('/user/me/delete').patch(protect, deleteProfile);
 router.route('/user/password/update').patch(protect, updatePassword);
 router.route('/user/password/forgot').post(requestPasswordReset);
 router.route('/user/password/reset/:token').patch(resetPassword);
-router.route('/user/logout').get(logout);
 
 /******************( ADMIN ROUTES )******************/
 router.route('/admin/users').get(protect, authorizeRoles('admin'), getUsers);

@@ -75,7 +75,7 @@ export const protect = async (req, res, next) => {
 /**
  * Middleware to check user authorization to access a certain resource based on their role
  * @param  {...any} roles one more values to give authorization to from @example authorizeRoles('admin', 'lead', ...)
- * @returns true/false
+ * @returns Boolean
  */
 export const authorizeRoles = (...roles) => {
   return (req, res, next) => {

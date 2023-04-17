@@ -131,7 +131,7 @@ export const deleteProduct = (id) => async (dispatch) => {
 };
 
 /**
- * Reset product state after UPDATE or DELETE
+ * Reset product state after UPDATE or DELETE - execute it when the component unmounts
  * @returns empty object
  */
 export const resetProduct = () => async (dispatch) => {
