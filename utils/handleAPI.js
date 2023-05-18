@@ -50,9 +50,9 @@ class APIFeatures {
     }
     return this;
   }
-  paginate() {
+  paginate(pageSize) {
     const currentPage = parseInt(this.queryStr.page) || 1;
-    const limit = parseInt(this.queryStr.limit) || 100; // results per page
+    const limit = parseInt(this.queryStr.limit) || pageSize || 100; // results per page
     const skip = (currentPage - 1) * limit;
     this.query = this.query.skip(skip).limit(limit);
     return this;
@@ -98,25 +98,33 @@ const getMany = (Model) => async (req, res, next) => {
   let filter = {};
   // handle nested routes - param kay has to be similar to the property in the database @example {productId: req.params.productId}
   const isNestedRoute = !!Object.keys(req.params).length;
-  if (isNestedRoute) {
+  if (isNestedRoute === true) {
     for (const key in req.params) {
       filter[[key]] = req.params[key];
     }
   }
 
+  let pageSize = 10;
   const features = new APIFeatures(Model.find(filter), req.query)
     .search()
     .filter()
     .sort()
     .limitFields()
-    .paginate();
+    .paginate(pageSize);
 
   const doc = await features.query;
 
   res.status(200).json({
     success: true,
-    totalCount: await Model.countDocuments(),
     data: doc,
+    meta: {
+      pagination: {
+        page: req.query.page || 1,
+        pageSize: req.query.limit || pageSize || 100,
+        pageCount: doc.length,
+        total: await Model.countDocuments(),
+      },
+    },
   });
 };
 

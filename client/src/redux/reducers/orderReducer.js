@@ -50,7 +50,7 @@ export const orderReducer = (state = { order: {} }, action) => {
       return { loading: false, error: action.payload };
 
     case ORDER_RESET:
-      return { order: { order: {} } };
+      return { created: false, updated: false, delete: false };
 
     case CLEAR_ERRORS:
       return { ...state, error: null };

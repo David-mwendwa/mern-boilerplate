@@ -81,7 +81,7 @@ export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       throw new ForbiddenError(
-        `${req.user.role} is not allowed to perfom this action`
+        `Role: ${req.user.role} is not allowed to perfom this action`
       );
     }
     next();

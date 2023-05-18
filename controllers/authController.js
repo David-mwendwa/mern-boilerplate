@@ -15,7 +15,7 @@ export const register = async (req, res, next) => {
     throw new BadRequestError('Email already in use');
   }
   const result = await uploadToCloudinary(req.body.avatar, {
-    folder: '',
+    folder: '<appname>/users',
     width: '150',
     crop: 'scale',
   });

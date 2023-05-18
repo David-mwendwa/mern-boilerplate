@@ -40,7 +40,7 @@ import {
 } from '../constants/userConstants';
 
 /**
- * Register a new user
+ * Register user
  * @param {*} user - new user details object
  * @returns new authenticated user
  */
@@ -179,7 +179,7 @@ export const deleteProfile = () => async (dispatch) => {
 };
 
 /**
- * Generate password reset email if a user forgot password
+ * Generate password reset email for a user to reset password
  * @param {*} email object with email value
  * @returns success status
  */

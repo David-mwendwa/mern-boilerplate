@@ -9,18 +9,23 @@ import {
 } from './reducers/userReducers.js';
 import { cartReducer } from './reducers/cartReducers';
 import { ordersReducer, orderReducer } from './reducers/orderReducer.js';
-import { productReducer, productsReducer } from './reducers/productReducer.js';
+import {
+  productReducer,
+  productsReducer,
+  reviewReducer,
+} from './reducers/productReducer.js';
 
 const reducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
   user: userReducer,
   users: usersReducer,
+  password: passwordReducer,
   order: orderReducer,
   orders: ordersReducer,
   product: productReducer,
   products: productsReducer,
-  password: passwordReducer,
+  review: reviewReducer,
 });
 
 const cartItemsFromStorage = localStorage.getItem('cartItems')

@@ -15,13 +15,19 @@ import {
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DELETE_FAIL,
   PRODUCT_RESET,
+  REVIEW_CREATE_REQUEST,
+  REVIEW_CREATE_SUCCESS,
+  REVIEW_CREATE_FAIL,
+  REVIEW_RESET,
+  REVIEW_IS_ALLOWED_REQUEST,
+  REVIEW_IS_ALLOWED_SUCCESS,
+  REVIEW_IS_ALLOWED_FAIL,
   CLEAR_ERRORS,
 } from '../constants/productConstants';
 
 /**
  * Get product state on CREATE, READ ONE, UPDATE or DELETE
  * @returns loading, product, created, updated, deleted and error
- * @example const { loading, product, created, updated, deleted, error } = useState(state => state.product)
  */
 export const productReducer = (state = { product: {} }, action) => {
   switch (action.type) {
@@ -50,7 +56,7 @@ export const productReducer = (state = { product: {} }, action) => {
       return { loading: false, error: action.payload };
 
     case PRODUCT_RESET:
-      return { product: { product: {} } };
+      return { created: false, updated: false, deleted: false };
 
     case CLEAR_ERRORS:
       return { ...state, error: null };
@@ -74,6 +80,37 @@ export const productsReducer = (state = { products: [] }, action) => {
 
     case PRODUCTS_GET_FAIL:
       return { ...state, error: action.payload };
+
+    case CLEAR_ERRORS:
+      return { ...state, error: null };
+
+    default:
+      return state;
+  }
+};
+
+/**
+ * Get review state on CREATE, UPDATE or DELETE
+ * @returns loading, created, deleted, allowedToReview and error
+ */
+export const reviewReducer = (state = {}, action) => {
+  switch (action.type) {
+    case REVIEW_CREATE_REQUEST:
+    case REVIEW_IS_ALLOWED_REQUEST:
+      return { loading: true };
+
+    case REVIEW_CREATE_SUCCESS:
+      return { loading: false, created: action.payload };
+
+    case REVIEW_IS_ALLOWED_SUCCESS:
+      return { loading: false, allowedToReview: action.payload };
+
+    case REVIEW_RESET:
+      return { created: false };
+
+    case REVIEW_CREATE_FAIL:
+    case REVIEW_IS_ALLOWED_FAIL:
+      return { loading: false, error: action.payload };
 
     case CLEAR_ERRORS:
       return { ...state, error: null };

@@ -39,7 +39,7 @@ export const sendToken = (user, statusCode, res) => {
     expires: new Date(Date.now() + process.env.COOKIE_LIFETIME * oneDay),
     httpOnly: true,
   };
-  if (process.env.NODE_ENV === 'production')
+  if (/production/i.test(process.env.NODE_ENV))
     options = { ...options, secure: true };
 
   user.password = undefined;

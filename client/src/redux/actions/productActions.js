@@ -16,6 +16,13 @@ import {
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DELETE_FAIL,
   PRODUCT_RESET,
+  REVIEW_CREATE_REQUEST,
+  REVIEW_CREATE_SUCCESS,
+  REVIEW_CREATE_FAIL,
+  REVIEW_RESET,
+  REVIEW_IS_ALLOWED_REQUEST,
+  REVIEW_IS_ALLOWED_SUCCESS,
+  REVIEW_IS_ALLOWED_FAIL,
   CLEAR_ERRORS,
 } from '../constants/productConstants';
 
@@ -106,7 +113,10 @@ export const updateProduct = (id, newDetails) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_UPDATE_FAIL,
-      payload: error.response.data.message,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
     });
   }
 };
@@ -125,7 +135,10 @@ export const deleteProduct = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_DELETE_FAIL,
-      payload: error.response.data.message,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
     });
   }
 };
@@ -136,6 +149,66 @@ export const deleteProduct = (id) => async (dispatch) => {
  */
 export const resetProduct = () => async (dispatch) => {
   dispatch({ type: PRODUCT_RESET });
+};
+
+/************** REVIEW ACTIONS **************/
+
+/**
+ * Post review
+ * @param {*} reviewData review details e.g comment
+ * @returns success status
+ */
+export const createReview = (reviewData) => async (dispatch) => {
+  dispatch({ type: REVIEW_CREATE_REQUEST });
+
+  try {
+    const config = { headers: { 'Content-Type': 'application/json' } };
+    const { data } = await axios.patch(`/api/v1/reviews`, reviewData, config);
+    dispatch({ type: REVIEW_CREATE_SUCCESS, payload: data.data.success });
+  } catch (error) {
+    dispatch({
+      type: REVIEW_CREATE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+/**
+ * Verify if a user is allowed to review a product
+ * @param {*} productId id of the product to review
+ * @returns Boolean
+ */
+export const verifyPermissionToReview = (productId) => async (dispatch) => {
+  dispatch({ type: REVIEW_IS_ALLOWED_REQUEST });
+
+  try {
+    const { data } = await axios.get(
+      `/api/v1/reviews/reviewable?productId=${productId}`
+    );
+    dispatch({
+      type: REVIEW_IS_ALLOWED_SUCCESS,
+      payload: data.data.allowedToReview,
+    });
+  } catch (error) {
+    dispatch({
+      type: REVIEW_IS_ALLOWED_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+/**
+ * Reset review state after CREATE UPDATE or DELETE - execute it when the component unmounts
+ * @returns empty object
+ */
+export const resetReview = () => async (dispatch) => {
+  dispatch({ type: REVIEW_RESET });
 };
 
 /**

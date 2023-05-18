@@ -69,7 +69,7 @@ const handleProductionErrors = async (err, req, res, next) => {
  */
 const errorHandlerMiddleware = (err, req, res, next) => {
   let environment = process.env.NODE_ENV?.trim();
-  if (environment && environment === 'production') {
+  if (environment && /production/i.test(environment)) {
     return handleProductionErrors(err, req, res, next);
   } else {
     return handleDevelopmentErrors(err, req, res, next);
