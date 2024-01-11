@@ -1,6 +1,6 @@
 # MERN Boilerplate
 
-This is full stack boilerplate with React, Redux, Express and Mongoose and Passport.
+This is full stack boilerplate with React, Redux, Express, Mongoose and Passport.
 
 ## Features
 
