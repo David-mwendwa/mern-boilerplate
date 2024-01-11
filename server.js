@@ -24,6 +24,7 @@ import notFoundMiddleware from './middleware/not-found.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import productRouter from './routes/productRoutes.js';
+import mpesaRouter from './routes/mpesaRoutes.js';
 
 const app = express();
 dotenv.config();
@@ -82,6 +83,7 @@ app.use(hpp({ whitelist: [''] })); // prevent parameter pollution i.e sort=durat
 app.use('/api/v1', userRouter);
 app.use('/api/v1', orderRouter);
 app.use('/api/v1', productRouter);
+app.use('/api/v1', mpesaRouter);
 
 // use error middleware
 app.use(notFoundMiddleware);

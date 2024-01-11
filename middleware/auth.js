@@ -1,3 +1,4 @@
+import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import { UnauthenticatedError, ForbiddenError } from '../errors/index.js';
@@ -41,7 +42,7 @@ export const protect_cookies = async (req, res, next) => {
     throw new UnauthenticatedError('Authentication Invalid. Please login.');
   }
   // const { id, role } = await verifyToken({ token });
-  const { id, role } = await jwt.verify(token, process.env.JWT_SECRET);
+  const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
   req.user = { id, role };
   next();
 };
@@ -67,7 +68,7 @@ export const protect = async (req, res, next) => {
     throw new UnauthenticatedError('Authentication Invalid. Please log in.');
   }
   // const { id, role } = await verifyToken({ token }); // alternative
-  const { id, role } = await jwt.verify(token, process.env.JWT_SECRET);
+  const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
   req.user = { id, role };
   next();
 };
@@ -86,4 +87,25 @@ export const authorizeRoles = (...roles) => {
     }
     next();
   };
+};
+
+/**
+ * Middleware for generating Mpesa oauth token
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+export const generateMpesaToken = async (req, res, next) => {
+  const consumer = process.env.MPESA_CONSUMER_KEY;
+  const secret = process.env.MPESA_SECRET_KEY;
+  const auth = new Buffer.from(`${consumer}:${secret}`).toString('base64');
+  let url = process.env.MPESA_OAUTH_TOKEN_URL;
+  if (/production/i.test(process.env.NODE_ENV)) {
+    url = url.replace(/sandbox/, 'api');
+  }
+  let { data } = await axios.get(url, {
+    headers: { Authorization: `Basic ${auth}` },
+  });
+  req.token = data['access_token'];
+  next();
 };

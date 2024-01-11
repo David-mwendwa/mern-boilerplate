@@ -100,7 +100,13 @@ export const requestPasswordReset = async (req, res, next) => {
     resetUrl = `${protocol}://${host}/password/reset/${resetToken}`;
   }
 
-  const html = `<p>Forgot your password? Click the URL below to reset</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>If you haven't requested for this email, please ignore it.</p>`;
+  // const html = `<p>Forgot your password? Click the URL below to reset</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>If you haven't requested for this email, please ignore it.</p>`;
+  const html = `<p>Thank you for signing up! We're excited to have you on board and will be happy to help you set everything up</p>
+                <p>Please click the link below to verify your email address: ${user.email}</p>
+                <p><a href="${resetUrl}">${resetUrl}</a></p>
+                <p>Please let us know if you have any questions, feature requests, or general feedback simply by replying to this email.</p>
+                <hr/><br/><p>All the best,</p><h3>Customer Care</h3><br/><hr/>
+                <p>If you haven't requested for password recovery, Please ignore this email.</p>`;
 
   try {
     let mailOptions = {

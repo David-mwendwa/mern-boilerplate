@@ -1,1 +1,0 @@
-e-commerce MERN boilerplate
