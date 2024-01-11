@@ -71,6 +71,8 @@ app.use(
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000, // 60 minutes
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message:
     'Too many requests from this IP address! Please try again after an hour',
 });
@@ -91,7 +93,7 @@ app.use(errorHandlerMiddleware);
 
 // start server
 const PORT = process.env.PORT || 5000;
-const DB = process.env.MONGO_URL_TEST;
+const DB = process.env.MONGO_URL;
 
 mongoose
   .connect(DB)
