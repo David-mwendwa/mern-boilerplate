@@ -60,7 +60,7 @@ class APIFeatures {
 }
 
 /**
- * A function to create a document
+ * Create a document
  * @param {*} Model mongoose data model
  * @returns created document
  */
@@ -70,7 +70,7 @@ const createOne = (Model) => async (req, res, next) => {
 };
 
 /**
- * A function to query and get one document
+ * Get single document
  * @param {*} Model mongoose data model
  * @param {*} populateOptions options to parse to mongoose populate method
  * @example (singlepopulate) getOne(<Model>, { path: 'user', select: 'name email role'})
@@ -78,17 +78,19 @@ const createOne = (Model) => async (req, res, next) => {
  * @returns one document
  */
 const getOne = (Model, populateOptions) => async (req, res, next) => {
-  let query = Model.findById(req.params.id);
+  const documentId = req.params.id || req.query.id;
+  let query = Model.findById(documentId);
   if (populateOptions) {
     query = query.populate(populateOptions);
   }
   const doc = await query;
-  if (!doc) throw new NotFoundError('No document found with that ID');
+  if (!doc)
+    throw new NotFoundError(`No document found with that ID: ${documentId}`);
   res.status(200).json({ success: true, data: doc });
 };
 
 /**
- * A function to query and get many documents
+ * Query and get one or more documents
  * @param {*} Model mongoose data model
  * @returns one or more documents
  */
@@ -127,27 +129,31 @@ const getMany = (Model) => async (req, res, next) => {
 };
 
 /**
- * A function to update document by id
+ * Update document by id
  * @param {*} Model mongoose data model
  * @returns updated document
  */
 const updateOne = (Model) => async (req, res, next) => {
-  const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+  const documentId = req.params.id || req.query.id;
+  const doc = await Model.findByIdAndUpdate(documentId, req.body, {
     new: true,
     runValidators: true,
   });
-  if (!doc) throw new NotFoundError('No document found with that ID');
+  if (!doc)
+    throw new NotFoundError(`No document found with that ID: ${documentId}`);
   res.status(201).json({ success: true, data: doc });
 };
 
 /**
- * A function to delete document by id
+ * Delete document by id
  * @param {*} Model mongoose data model
  * @returns null
  */
 const deleteOne = (Model) => async (req, res, next) => {
-  const doc = await Model.findByIdAndDelete(req.params.id);
-  if (!doc) throw new NotFoundError('No document found with that ID');
+  const documentId = req.params.id || req.query.id;
+  const doc = await Model.findByIdAndDelete(documentId);
+  if (!doc)
+    throw new NotFoundError(`No document found with that ID: ${documentId}`);
   res.status(204).json({ success: true, data: null });
 };
 
