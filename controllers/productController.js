@@ -32,9 +32,10 @@ export const getProducts = getMany(Product);
 export const getProduct = getOne(Product);
 
 export const updateProduct = async (req, res, next) => {
-  let product = await Product.findById(req.query.id);
+  const productId = req.params.id || req.query.id;
+  let product = await Product.findById(productId);
   if (!product) {
-    throw new NotFoundError('No document found with that ID');
+    throw new NotFoundError(`No document found with ID: ${productId}`);
   }
   const images = req.body.images;
   if (images) {
@@ -55,7 +56,7 @@ export const updateProduct = async (req, res, next) => {
     }
     req.body.images = imagesLinks;
   }
-  product = await Product.findByIdAndUpdate(req.query.id, req.body, {
+  product = await Product.findByIdAndUpdate(productId, req.body, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
@@ -64,15 +65,16 @@ export const updateProduct = async (req, res, next) => {
 };
 
 export const deleteProduct = async (req, res, next) => {
-  const product = await Product.findById(req.query.id);
+  const productId = req.params.id || req.query.id;
+  const product = await Product.findById(productId);
   if (!product) {
-    throw new NotFoundError('No document found with that ID');
+    throw new NotFoundError(`No document found with ID: ${productId}`);
   }
   // delete images associated with the product from cloudinary
   for (let i = 0; i < product.images.length; i++) {
     await removeFromCloudinary(product.images[i].public_id);
   }
-  await Room.findByIdAndRemove(req.query.id);
+  await Product.findByIdAndRemove(productId);
   res.status(204).json({ success: true, data: null });
 };
 

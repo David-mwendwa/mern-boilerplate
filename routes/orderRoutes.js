@@ -11,6 +11,7 @@ import { authorizeRoles, authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
+/******************[ USER ROUTES ]******************/
 router.route('/order').post(createStripeOrder);
 router.route('/orders').get(getMyOrders);
 

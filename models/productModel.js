@@ -16,10 +16,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please enter product description'],
     },
-    ratings: {
-      type: Number,
-      default: 0,
-    },
     // cloudinary images
     images: [
       {
@@ -33,12 +29,16 @@ const productSchema = new mongoose.Schema(
         },
       },
     ],
+    // multer
+    // image: {
+    //   data: Buffer,
+    //   contentType: String,
+    //   filename: String,
+    // },
     category: {
       type: String,
-      enum: {
-        values: ['general', '...'],
-        message: 'Please select correct category for the product',
-      },
+      enum: ['', 'values...'],
+      default: '',
     },
     stock: {
       type: Number,
@@ -49,37 +49,39 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    reviews: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          required: true,
-        },
-        name: {
-          type: String,
-          required: true,
-        },
-        rating: {
-          type: String,
-          required: true,
-        },
-        comment: {
-          type: String,
-          required: true,
-        },
-        date: {
-          type: Date,
-        },
-      },
-    ],
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
+  // For virtual properties
+  { toJSON: { virtuals: true } },
+  { toOject: { virtuals: true } }
 );
+
+/**
+ * virtuals are document properties that are not stored in the database
+ * They only exist logically or are usually created on the fly when computing something
+ * @reference https://mongoosejs.com/docs/tutorials/virtuals.html
+ */
+productSchema.virtual('reviews', {
+  ref: 'Review',
+  localField: '_id',
+  foreignField: 'product',
+  justOne: false,
+});
+
+/**
+ * Delete all reviews related to a product being deleted
+ */
+productSchema.pre('remove', async function (next) {
+  await this.model('Review').deleteMany({ product: this._id });
+});
 
 export default mongoose.model('Product', productSchema);
