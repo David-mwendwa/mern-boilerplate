@@ -1,15 +1,11 @@
 import Product from '../models/productModel.js';
 import Order from '../models/orderModel.js';
 import { getMany, getOne } from '../utils/handleAPI.js';
-import NotFoundError from '../errors/not-found.js';
+import { NotFoundError } from '../errors/customErrors.js';
 import {
   removeFromCloudinary,
   uploadToCloudinary,
 } from '../utils/cloudinary.js';
-
-export const getProducts = getMany(Product);
-
-export const getProduct = getOne(Product);
 
 export const createProduct = async (req, res) => {
   const images = req.body.images;
@@ -30,6 +26,10 @@ export const createProduct = async (req, res) => {
   const product = await Product.create(req.body);
   res.status(200).json({ success: true, data: product });
 };
+
+export const getProducts = getMany(Product);
+
+export const getProduct = getOne(Product);
 
 export const updateProduct = async (req, res, next) => {
   let product = await Product.findById(req.query.id);
@@ -76,7 +76,13 @@ export const deleteProduct = async (req, res, next) => {
   res.status(204).json({ success: true, data: null });
 };
 
-/****** REVIEW CONTROLLERS ******/
+/******************[ REVIEW CONTROLLERS ]******************/
+/**
+ * Create product review
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 export const createReview = async (req, res, next) => {
   const { rating, comment, productId } = req.body;
   const review = {
@@ -111,7 +117,12 @@ export const createReview = async (req, res, next) => {
   });
 };
 
-// check if a user is allowed to post a review(allowed only if they've purchased the product) => /reviews/reviewable?productId=123
+/**
+ * Verify if a user is allowed to post a review(allowed only if they've purchased the product) => /reviews/reviewable?productId=123
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 export const verifyPermissionToReview = async (req, res, next) => {
   const productId = req.query.productId;
   const order = await Order.find({ user: req.user.id });

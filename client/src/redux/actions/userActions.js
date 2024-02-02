@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
@@ -38,6 +37,7 @@ import {
   PASSWORD_RESET_FAIL,
   CLEAR_ERRORS,
 } from '../constants/userConstants';
+import customFetch from '../../utils/customFetch';
 
 /**
  * Register user
@@ -48,7 +48,7 @@ export const register = (user) => async (dispatch) => {
   dispatch({ type: USER_REGISTER_REQUEST });
 
   try {
-    const { data } = await axios.post('/api/v1/user/register', user);
+    const { data } = await customFetch.post('/user/register', user);
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data.user });
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data.user });
     localStorage.setItem('user', JSON.stringify(data.user));
@@ -73,7 +73,7 @@ export const login = (user) => async (dispatch) => {
   dispatch({ type: USER_LOGIN_REQUEST });
 
   try {
-    const { data } = await axios.post('/api/v1/user/login', user);
+    const { data } = await customFetch.post('/user/login', user);
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data.user });
     localStorage.setItem('user', JSON.stringify(data.user));
     localStorage.setItem('token', JSON.stringify(data.token));
@@ -97,7 +97,7 @@ export const login = (user) => async (dispatch) => {
  */
 export const logout = () => async (dispatch) => {
   try {
-    await axios.get('/api/v1/user/logout');
+    await customFetch.get('/user/logout');
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     dispatch({ type: USER_LOGOUT_SUCCESS });
@@ -121,7 +121,7 @@ export const getProfile = () => async (dispatch) => {
   dispatch({ type: USER_PROFILE_REQUEST });
 
   try {
-    const { data } = await axios.get('/api/v1/user/me');
+    const { data } = await customFetch.get('/user/profile');
     dispatch({ type: USER_PROFILE_SUCCESS, payload: data.user });
   } catch (error) {
     dispatch({
@@ -143,7 +143,7 @@ export const updateProfile = (user) => async (dispatch) => {
   dispatch({ type: USER_PROFILE_UPDATE_REQUEST });
 
   try {
-    await axios.patch(`/api/v1/user/me/update`, user);
+    await customFetch.patch(`/user/profile-update`, user);
     dispatch({ type: USER_PROFILE_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -165,7 +165,7 @@ export const deleteProfile = () => async (dispatch) => {
   dispatch({ type: USER_PROFILE_DELETE_REQUEST });
 
   try {
-    await axios.patch(`/api/v1/user/me/delete`);
+    await customFetch.patch(`/user/profile-delete`);
     dispatch({ type: USER_PROFILE_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -183,14 +183,14 @@ export const deleteProfile = () => async (dispatch) => {
  * @param {*} email object with email value
  * @returns success status
  */
-export const requestPasswordReset = (email) => async (dispatch) => {
+export const forgotPassword = (email) => async (dispatch) => {
   dispatch({ type: PASSWORD_FORGOT_REQUEST });
 
   try {
     const config = {
       headers: { 'Content-Type': 'application/json' },
     };
-    await axios.post('/api/v1/password/forgot', email, config);
+    await customFetch.post('/user/password-forgot', email, config);
     dispatch({ type: PASSWORD_FORGOT_SUCCESS });
   } catch (error) {
     dispatch({
@@ -216,7 +216,7 @@ export const resetPassword = (token, passwords) => async (dispatch) => {
     const config = {
       headers: { 'Content-Type': 'application/json' },
     };
-    await axios.patch(`/api/password/reset/${token}`, passwords, config);
+    await customFetch.patch(`/api/user/password-reset/${token}`, passwords, config);
     dispatch({ type: PASSWORD_RESET_SUCCESS });
   } catch (error) {
     dispatch({
@@ -240,7 +240,7 @@ export const getUsers = () => async (dispatch) => {
   dispatch({ type: USERS_GET_REQUEST });
 
   try {
-    const { data } = await axios.get('/api/v1/admin/users');
+    const { data } = await customFetch.get('/admin/users');
     dispatch({ type: USERS_GET_SUCCESS, payload: data.data });
   } catch (error) {
     dispatch({
@@ -259,7 +259,7 @@ export const getUser = (id) => async (dispatch) => {
   dispatch({ type: USER_GET_REQUEST });
 
   try {
-    const { data } = await axios.get(`/api/v1/admin/users/${id}`);
+    const { data } = await customFetch.get(`/admin/user/${id}`);
     dispatch({ type: USER_GET_SUCCESS, payload: data.user });
   } catch (error) {
     dispatch({
@@ -279,7 +279,7 @@ export const updateUser = (id, newDetails) => async (dispatch) => {
   dispatch({ type: USER_UPDATE_REQUEST });
 
   try {
-    await axios.patch(`/api/v1/admin/users/${id}`, newDetails);
+    await customFetch.patch(`/admin/user/${id}`, newDetails);
     dispatch({ type: USER_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -298,7 +298,7 @@ export const deleteUser = (id) => async (dispatch) => {
   dispatch({ type: USER_DELETE_REQUEST });
 
   try {
-    await axios.delete(`/api/v1/admin/users/${id}`);
+    await customFetch.delete(`/admin/user/${id}`);
     dispatch({ type: USER_DELETE_SUCCESS });
   } catch (error) {
     dispatch({

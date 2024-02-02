@@ -1,5 +1,5 @@
 /**
- * A middleware for handling unavailable routes
+ * Handle unavailable routes
  * @param {*} req request object
  * @param {*} res response object
  */
@@ -8,4 +8,3 @@ const notFoundMiddleware = async (req, res) => {
 };
 
 export default notFoundMiddleware;
-

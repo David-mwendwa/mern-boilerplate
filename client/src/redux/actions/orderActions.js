@@ -1,4 +1,4 @@
-import axios from 'axios';
+import customFetch from '../../utils/customFetch';
 import {
   ORDERS_GET_REQUEST,
   ORDERS_GET_SUCCESS,
@@ -38,8 +38,8 @@ export const stripe_placeOrder =
           'Content-Type': 'application/json',
         },
       };
-      const { data } = await axios.post(
-        '/api/v1/order/new',
+      const { data } = await customFetch.post(
+        '/order',
         { token, subtotal, currentUser, cartItems },
         config
       );
@@ -64,7 +64,7 @@ export const getMyOrders = () => async (dispatch, getState) => {
   dispatch({ type: ORDERS_GET_REQUEST });
 
   try {
-    const { data } = await axios.get('/api/v1/orders/me');
+    const { data } = await customFetch.get('/orders');
     dispatch({ type: ORDERS_GET_SUCCESS, payload: data.data });
   } catch (error) {
     dispatch({
@@ -86,7 +86,7 @@ export const getOrders = () => async (dispatch) => {
   dispatch({ type: ORDERS_GET_REQUEST });
 
   try {
-    const { data } = await axios.get('/api/v1/admin/orders');
+    const { data } = await customFetch.get('/admin/orders');
     dispatch({ type: ORDERS_GET_SUCCESS, payload: data.data });
   } catch (error) {
     dispatch({
@@ -105,7 +105,7 @@ export const getOrder = (id) => async (dispatch) => {
   dispatch({ type: ORDER_GET_REQUEST });
 
   try {
-    const { data } = await axios.get(`/api/v1/orders/${id}`);
+    const { data } = await customFetch.get(`/order/${id}`);
     dispatch({ type: ORDER_GET_SUCCESS, payload: data.data });
   } catch (error) {
     dispatch({
@@ -128,7 +128,7 @@ export const updateOrder = (id, newDetails) => async (dispatch) => {
   dispatch({ type: ORDER_UPDATE_REQUEST });
 
   try {
-    await axios.patch(`/api/v1/admin/orders/${id}`, newDetails);
+    await customFetch.patch(`/admin/order/${id}`, newDetails);
     dispatch({ type: ORDER_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -147,7 +147,7 @@ export const deleteOrder = (id) => async (dispatch) => {
   dispatch({ type: ORDER_DELETE_REQUEST });
 
   try {
-    await axios.delete(`/api/v1/admin/orders/${id}`);
+    await customFetch.delete(`/admin/order/${id}`);
     dispatch({ type: ORDER_DELETE_SUCCESS });
   } catch (error) {
     dispatch({

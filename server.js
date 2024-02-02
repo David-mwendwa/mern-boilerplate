@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
 
 // import extra security packages
 import helmet from 'helmet';
@@ -17,8 +18,8 @@ import rateLimit from 'express-rate-limit';
 import hpp from 'hpp';
 
 // import middleware
-import errorHandlerMiddleware from './middleware/error-handler.js';
-import notFoundMiddleware from './middleware/not-found.js';
+import errorHandlerMiddleware from './middleware/errorHandler.js';
+import notFoundMiddleware from './middleware/notFound.js';
 
 // import routes
 import userRouter from './routes/userRoutes.js';
@@ -27,13 +28,12 @@ import productRouter from './routes/productRoutes.js';
 import mpesaRouter from './routes/mpesaRoutes.js';
 
 const app = express();
-dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url)); // required when using es6 module type
 
 // handle unhandled errors that occur in synchronous code i.e undefined value
 process.on('uncaughtException', (err) => {
-  console.log(`UNCAUGHT EXCEPTION! Shutting down...`);
+  console.log(`UNCAUGHT EXCEPTION! SHUTTING DOWN...`);
   console.log(err.name, err.message);
   process.exit(1);
 });
@@ -104,7 +104,7 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // handle errors occurring outside express i.e incorrect db password, invalid connection string
 process.on('unhandledRejection', (err) => {
-  console.log(`UNHANDLED REJECTION! Shutting down...`);
+  console.log(`UNHANDLED REJECTION! SHUTTING DOWN...`);
   console.log(err.name, err.message);
   server.close(() => process.exit(1));
 });

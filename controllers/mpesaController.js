@@ -1,9 +1,14 @@
 import moment from 'moment';
 import axios from 'axios';
 import Mpesa from '../models/mpesaModel.js';
-import { BadRequestError, NotFoundError } from '../errors/index.js';
+import { BadRequestError, NotFoundError } from '../errors/customErrors.js';
 
-// send a post request to the stk
+/**
+ * Send a post request to the stk
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
 export const stkpush = async (req, res) => {
   const amount = req.body.amount;
   let phone = req.body.phone; // format: 2547xxxxxxxx
@@ -13,7 +18,7 @@ export const stkpush = async (req, res) => {
     phone = `254${phone.substring(1)}`;
   }
   if (!phone || !amount) {
-    throw new BadRequestError('provide your phone number and amount to pay');
+    throw new BadRequestError('please provide your phone and amount to pay');
   }
 
   const shortCode = process.env.MPESA_SHORTCODE;
@@ -38,7 +43,7 @@ export const stkpush = async (req, res) => {
       PartyA: phone,
       PartyB: shortCode,
       PhoneNumber: phone,
-      CallBackURL: 'https://mydomain.com/path', // use  the correct callbackURL
+      CallBackURL: 'https://mywebsite.com/path', // needs a live url for the callback to reach you
       AccountReference: 'Mpesa Test', //'Test',
       TransactionDesc: 'Testing STK Push',
     },
@@ -51,7 +56,12 @@ export const stkpush = async (req, res) => {
   return res.status(200).json({ success: true, data });
 };
 
-// persits transaction on the database after payment
+/**
+ * Persit a transaction on the database after payment
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
 export const callback = async (req, res) => {
   let body = req.body;
   let { ResultCode, ResultDesc } = body.Body.stkCallback;
@@ -93,7 +103,7 @@ export const validate = async (req, res, next) => {
     MerchantRequestID: MerchantRequestID,
   });
   if (transaction == null) {
-    throw new NotFoundError('Cannot find transaction');
+    throw new NotFoundError('cannot find transaction');
   }
   res.status(200).json({ success: true, data: transaction });
 };

@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 router.post('/mpesa/stkpush', generateMpesaToken, stkpush);
-// router.post('/mpesa/callback', callback);
+router.post('/mpesa/callback', callback);
 // router.post('/mpesa/validate', validate);
 // router.get('/mpesa/transactions', getTransactions);
 

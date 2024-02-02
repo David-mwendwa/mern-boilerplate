@@ -100,7 +100,7 @@ userSchema.pre(/^find/, function (next) {
 });
 
 /**
- * Compare password
+ * Compare user input password with the one stored in the database
  * @param {*} inputPassword password from the request body
  * @param {*} userPwd (optional) actual user pasword on the database. Can also be parsed as this.password
  * @returns true or false
@@ -130,7 +130,7 @@ userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
  * @param {*} null
  * @returns authetication token
  */
-userSchema.methods.signToken = function () {
+userSchema.methods.signJWT = function () {
   return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_LIFETIME,
   });

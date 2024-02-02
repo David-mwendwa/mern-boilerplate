@@ -1,10 +1,10 @@
-import { verifyToken, sendToken } from './jwt.js';
+import { verifyJWT, sendToken } from './jwt.js';
 import { uploadOptions } from './multer.js';
 import { sendEmail } from './sendEmail.js';
 import { uploadToCloudinary, removeFromCloudinary } from './cloudinary.js';
 
 export {
-  verifyToken,
+  verifyJWT,
   sendToken,
   sendEmail,
   uploadOptions,

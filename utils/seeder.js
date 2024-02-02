@@ -1,7 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
+import mongoose from 'mongoose';
+
+// import a Model & the data to seed
+
 /**
  * Add data to the mongoDB
  * @param {*} Model - Model of the data you want to add - import the model
- * @param {*} data - data in json form - import the data
+ * @param {*} data - data in parsed form - import the data
  * @example seedProduct(Product, products)
  */
 const seedData = async (Model, data) => {

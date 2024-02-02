@@ -8,11 +8,11 @@ export const sendEmail = async (options) => {
   try {
     const transporter = nodemailer.createTransport({
       // service: 'gmail',
-      // secure: true,
+      secure: /production/i.test(process.env.NODE_ENV),
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
       auth: {
-        user: process.env.SMTP_USER,
+        user: process.env.SMTP_USERNAME,
         pass: process.env.SMTP_PASSWORD,
       },
     });

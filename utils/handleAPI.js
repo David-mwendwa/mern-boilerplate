@@ -1,4 +1,4 @@
-import { NotFoundError } from '../errors/index.js';
+import { NotFoundError } from '../errors/customErrors.js';
 
 /**
  * A class handler function for API features
@@ -83,9 +83,7 @@ const getOne = (Model, populateOptions) => async (req, res, next) => {
     query = query.populate(populateOptions);
   }
   const doc = await query;
-  if (!doc) {
-    throw new NotFoundError('No document found with that ID');
-  }
+  if (!doc) throw new NotFoundError('No document found with that ID');
   res.status(200).json({ success: true, data: doc });
 };
 
@@ -138,9 +136,7 @@ const updateOne = (Model) => async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-  if (!doc) {
-    throw new NotFoundError('No document found with that ID');
-  }
+  if (!doc) throw new NotFoundError('No document found with that ID');
   res.status(201).json({ success: true, data: doc });
 };
 
@@ -150,10 +146,8 @@ const updateOne = (Model) => async (req, res, next) => {
  * @returns null
  */
 const deleteOne = (Model) => async (req, res, next) => {
-  const doc = await Model.findByIdAndRemove(req.params.id);
-  if (!doc) {
-    throw new NotFoundError('No document found with that ID');
-  }
+  const doc = await Model.findByIdAndDelete(req.params.id);
+  if (!doc) throw new NotFoundError('No document found with that ID');
   res.status(204).json({ success: true, data: null });
 };
 

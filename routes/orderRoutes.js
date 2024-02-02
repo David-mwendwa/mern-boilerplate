@@ -7,20 +7,21 @@ import {
   createStripeOrder,
   updateOrder,
 } from '../controllers/orderController.js';
-import { authorizeRoles, protect } from '../middleware/auth.js';
+import { authorizeRoles, authenticate } from '../middleware/auth.js';
+
 const router = express.Router();
 
-router.route('/orders/new').post(createStripeOrder);
+router.route('/order').post(createStripeOrder);
 router.route('/orders').get(getMyOrders);
 
-/******************( ADMIN ROUTES )******************/
+/******************[ ADMIN ROUTES ]******************/
 router
   .route('/admin/orders')
-  .get(protect, authorizeRoles('admin'), getOrders);
+  .get(authenticate, authorizeRoles('admin'), getOrders);
 router
-  .route('/admin/orders/:id')
-  .get(protect, authorizeRoles('admin'), getOrder)
-  .patch(protect, authorizeRoles('admin'), updateOrder)
-  .delete(protect, authorizeRoles('admin'), deleteOrder);
+  .route('/admin/order/:id')
+  .get(authenticate, authorizeRoles('admin'), getOrder)
+  .patch(authenticate, authorizeRoles('admin'), updateOrder)
+  .delete(authenticate, authorizeRoles('admin'), deleteOrder);
 
 export default router;

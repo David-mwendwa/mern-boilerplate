@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import Stripe from 'stripe';
-import { BadRequestError } from '../errors/index.js';
+import { BadRequestError } from '../errors/customErrors.js';
 import { deleteOne, getMany, getOne, updateOne } from '../utils/handleAPI.js';
 import Order from '../models/orderModel.js';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -31,7 +31,7 @@ export const createStripeOrder = async (req, res) => {
   );
 
   if (!payment) {
-    throw new BadRequestError('Payment failed!');
+    throw new BadRequestError('payment failed!');
   }
 
   const order = new Order({
@@ -55,8 +55,7 @@ export const createStripeOrder = async (req, res) => {
 
 /**
  * Get orders - for currently authenticated user
- * @route   GET /api/v1/orders/me
- * @access  Private
+ * @route   GET /orders
  */
 export const getMyOrders = async (req, res) => {
   const orders = await Order.find({ user: req.user.id }).sort({

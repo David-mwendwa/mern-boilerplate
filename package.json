@@ -5,14 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "install-client": "cd client && npm install",
     "install-server": "npm install",
     "install-dependencies": " npm run install-client && npm run install-server ",
     "build-client": "cd client && npm run build",
-    "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build-client",
-    "server": "nodemon server --ignore client",
     "server:prod": "SET NODE_ENV=production & nodemon server.js --ignore client",
+    "heroku-postbuild": "npm run install-client && npm run build-client",
     "client": "npm start --prefix client",
+    "server": "nodemon server --ignore client",
     "start": "concurrently --kill-others-on-fail \" npm run server\" \" npm run client\"",
     "seeder": "node utils/seeder"
   },

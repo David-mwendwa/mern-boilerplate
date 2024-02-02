@@ -1,4 +1,4 @@
-import axios from 'axios';
+import customFetch from '../../utils/customFetch';
 import {
   PRODUCTS_GET_REQUEST,
   PRODUCTS_GET_SUCCESS,
@@ -36,12 +36,10 @@ export const createProduct = (productDetails) => async (dispatch) => {
 
   try {
     const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     };
-    const { data } = await axios.post(
-      '/api/v1/product/new',
+    const { data } = await customFetch.post(
+      '/admin/product',
       productDetails,
       config
     );
@@ -66,7 +64,7 @@ export const getProducts = () => async (dispatch) => {
   dispatch({ type: PRODUCTS_GET_REQUEST });
 
   try {
-    const { data } = await axios.get('/api/v1/admin/products');
+    const { data } = await customFetch.get('/products');
     dispatch({ type: PRODUCTS_GET_SUCCESS, payload: data.data });
   } catch (error) {
     dispatch({
@@ -85,7 +83,7 @@ export const getProduct = (id) => async (dispatch) => {
   dispatch({ type: PRODUCT_GET_REQUEST });
 
   try {
-    const { data } = await axios.get(`/api/v1/products/${id}`);
+    const { data } = await customFetch.get(`/product/${id}`);
     dispatch({ type: PRODUCT_GET_SUCCESS, payload: data.data });
   } catch (error) {
     dispatch({
@@ -108,7 +106,7 @@ export const updateProduct = (id, newDetails) => async (dispatch) => {
   dispatch({ type: PRODUCT_UPDATE_REQUEST });
 
   try {
-    await axios.patch(`/api/v1/admin/products/${id}`, newDetails);
+    await customFetch.patch(`/admin/product/${id}`, newDetails);
     dispatch({ type: PRODUCT_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -130,7 +128,7 @@ export const deleteProduct = (id) => async (dispatch) => {
   dispatch({ type: PRODUCT_DELETE_REQUEST });
 
   try {
-    await axios.delete(`/api/v1/admin/products/${id}`);
+    await customFetch.delete(`/admin/products/${id}`);
     dispatch({ type: PRODUCT_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -163,7 +161,11 @@ export const createReview = (reviewData) => async (dispatch) => {
 
   try {
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const { data } = await axios.patch(`/api/v1/reviews`, reviewData, config);
+    const { data } = await customFetch.patch(
+      `/reviews`,
+      reviewData,
+      config
+    );
     dispatch({ type: REVIEW_CREATE_SUCCESS, payload: data.data.success });
   } catch (error) {
     dispatch({
@@ -185,8 +187,8 @@ export const verifyPermissionToReview = (productId) => async (dispatch) => {
   dispatch({ type: REVIEW_IS_ALLOWED_REQUEST });
 
   try {
-    const { data } = await axios.get(
-      `/api/v1/reviews/reviewable?productId=${productId}`
+    const { data } = await customFetch.get(
+      `/reviews/reviewable?productId=${productId}`
     );
     dispatch({
       type: REVIEW_IS_ALLOWED_SUCCESS,

@@ -1,7 +1,6 @@
 import express from 'express';
 const router = express.Router();
 
-import { register, login, logout } from '../controllers/authController.js';
 import {
   getUser,
   getUsers,
@@ -11,28 +10,34 @@ import {
   updatePassword,
   deleteUser,
   getProfile,
-  requestPasswordReset,
   resetPassword,
+  forgotPassword,
+  register,
+  login,
+  logout,
 } from '../controllers/userController.js';
-import { protect, authorizeRoles } from '../middleware/auth.js';
+import { authenticate, authorizeRoles } from '../middleware/auth.js';
 
+/******************[ USER ROUTES ]******************/
 router.route('/user/register').post(register);
 router.route('/user/login').post(login);
 router.route('/user/logout').get(logout);
 
-router.route('/user/me').get(protect, getProfile);
-router.route('/user/me/update').patch(protect, updateProfile);
-router.route('/user/me/delete').patch(protect, deleteProfile);
-router.route('/user/password/update').patch(protect, updatePassword);
-router.route('/user/password/forgot').post(requestPasswordReset);
-router.route('/user/password/reset/:token').patch(resetPassword);
+router.route('/user/profile').get(authenticate, getProfile);
+router.route('/user/profile-update').patch(authenticate, updateProfile);
+router.route('/user/profile-delete').patch(authenticate, deleteProfile);
+router.route('/user/password-update').patch(authenticate, updatePassword);
+router.route('/user/password-forgot').post(forgotPassword);
+router.route('/user/password-reset/:token').patch(resetPassword);
 
-/******************( ADMIN ROUTES )******************/
-router.route('/admin/users').get(protect, authorizeRoles('admin'), getUsers);
+/******************[ ADMIN ROUTES ]******************/
 router
-  .route('/admin/users/:id')
-  .get(protect, authorizeRoles('admin'), getUser)
-  .patch(protect, authorizeRoles('admin'), updateUser)
-  .delete(protect, authorizeRoles('admin'), deleteUser);
+  .route('/admin/users')
+  .get(authenticate, authorizeRoles('admin'), getUsers);
+router
+  .route('/admin/user/:id')
+  .get(authenticate, authorizeRoles('admin'), getUser)
+  .patch(authenticate, authorizeRoles('admin'), updateUser)
+  .delete(authenticate, authorizeRoles('admin'), deleteUser);
 
 export default router;
