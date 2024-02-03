@@ -25,7 +25,7 @@ import {
  * @param {*} subtotal cartItems' total price
  * @returns an object containing token, subtotal, currently logged in user as 'currentUser' and cartItems
  */
-export const stripe_placeOrder =
+export const placePaypalOrder =
   (token, subtotal) => async (dispatch, getState) => {
     dispatch({ type: ORDER_CREATE_REQUEST });
 

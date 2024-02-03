@@ -216,7 +216,11 @@ export const resetPassword = (token, passwords) => async (dispatch) => {
     const config = {
       headers: { 'Content-Type': 'application/json' },
     };
-    await customFetch.patch(`/api/user/password-reset/${token}`, passwords, config);
+    await customFetch.patch(
+      `/api/user/password-reset/${token}`,
+      passwords,
+      config
+    );
     dispatch({ type: PASSWORD_RESET_SUCCESS });
   } catch (error) {
     dispatch({
