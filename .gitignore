@@ -1,5 +1,7 @@
 /node_modules
 
+/_client
+
 client/node_modules
 
 client/npm-debug.log*
